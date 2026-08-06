@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+packages/
+x64/
+[Dd]ebug/
+[Rr]elease/
+*.aps
+*.vcxproj.user
+.p4ignore

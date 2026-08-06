@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37314.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xminecraft", "xminecraft\xminecraft.vcxproj", "{726C2AF5-C3A5-4F3C-BCC2-BBF68A6C563B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xjvm", "xjvm\xjvm.vcxproj", "{586362D8-7627-434A-A62C-56FB8A76D14F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jvmtest", "jvmtest\jvmtest.vcxproj", "{60E92FC6-C63F-4BA3-A3E1-9E255593A327}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{726C2AF5-C3A5-4F3C-BCC2-BBF68A6C563B}.Debug|x86.ActiveCfg = Debug|Win32
+		{726C2AF5-C3A5-4F3C-BCC2-BBF68A6C563B}.Debug|x86.Build.0 = Debug|Win32
+		{726C2AF5-C3A5-4F3C-BCC2-BBF68A6C563B}.Release|x86.ActiveCfg = Release|Win32
+		{726C2AF5-C3A5-4F3C-BCC2-BBF68A6C563B}.Release|x86.Build.0 = Release|Win32
+		{586362D8-7627-434A-A62C-56FB8A76D14F}.Debug|x86.ActiveCfg = Debug|Win32
+		{586362D8-7627-434A-A62C-56FB8A76D14F}.Debug|x86.Build.0 = Debug|Win32
+		{586362D8-7627-434A-A62C-56FB8A76D14F}.Release|x86.ActiveCfg = Release|Win32
+		{586362D8-7627-434A-A62C-56FB8A76D14F}.Release|x86.Build.0 = Release|Win32
+		{60E92FC6-C63F-4BA3-A3E1-9E255593A327}.Debug|x86.ActiveCfg = Debug|Win32
+		{60E92FC6-C63F-4BA3-A3E1-9E255593A327}.Debug|x86.Build.0 = Debug|Win32
+		{60E92FC6-C63F-4BA3-A3E1-9E255593A327}.Release|x86.ActiveCfg = Release|Win32
+		{60E92FC6-C63F-4BA3-A3E1-9E255593A327}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D5C14A58-DA03-45CF-8963-19E634AE6AB4}
+	EndGlobalSection
+EndGlobal
