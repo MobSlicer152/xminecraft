@@ -2,9 +2,12 @@
 
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <bit>
 #include <concepts>
 #include <cstdint>
+#include <limits>
 #include <span>
 
 namespace XJVM

@@ -17,6 +17,9 @@
     <ClInclude Include="endian.h" />
     <ClInclude Include="jvmdef.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="classfile.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

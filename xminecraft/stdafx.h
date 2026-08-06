@@ -12,6 +12,4 @@
 #include <xtl.h>
 #include <xgraphics.h>
 
-#include "gl/gl.h"
-
 // TODO: reference additional headers your program requires here

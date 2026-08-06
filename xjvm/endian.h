@@ -23,15 +23,15 @@ template <std::integral T> static constexpr T Byteswap(T x)
 	}
 	else if constexpr (size == 2)
 	{
-		return _Byteswap_ushort(x);
+		return std::_Byteswap_ushort(x);
 	}
 	else if constexpr (size == 4)
 	{
-		return _Byteswap_ulong(x);
+		return std::_Byteswap_ulong(x);
 	}
 	else if constexpr (size == 8)
 	{
-		return _Byteswap_uint64(x);
+		return std::_Byteswap_uint64(x);
 	}
 }
 

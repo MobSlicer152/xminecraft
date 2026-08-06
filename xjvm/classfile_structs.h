@@ -7,8 +7,6 @@
 namespace XJVM
 {
 
-
-
 // types for parsing classes
 
 typedef uint8_t u1;
@@ -20,7 +18,7 @@ typedef uint32_t u4;
 /// <summary>
 /// Constant pool info type
 /// </summary>
-enum ConstantType : u1
+enum class ConstantType : u1
 {
 	CONSTANT_Class = 7,
 	CONSTANT_Fieldref = 9,
@@ -33,6 +31,7 @@ enum ConstantType : u1
 	CONSTANT_Double = 6,
 	CONSTANT_NameAndType = 12,
 	CONSTANT_Utf8 = 1,
+	CONSTANT_Unknown = 0,
 };
 
 struct ConstantInfo
@@ -44,8 +43,9 @@ struct ConstantInfo
 /// <summary>
 /// Access flags for classes
 /// </summary>
-enum ClassAccessFlags : u2
+enum class ClassAccessFlags : u2
 {
+	ACC_UNKNOWN = 0x0000,
 	ACC_PUBLIC = 0x0001,
 	ACC_FINAL = 0x0010,
 	ACC_SUPER = 0x0020,
@@ -56,8 +56,9 @@ enum ClassAccessFlags : u2
 /// <summary>
 /// Access flags for fields
 /// </summary>
-enum FieldAccessFlags : u2
+enum class FieldAccessFlags : u2
 {
+	ACC_UNKNOWN = 0x0000,
 	ACC_PUBLIC = 0x0001,
 	ACC_PRIVATE = 0x0002,
 	ACC_PROTECTED = 0x0004,
@@ -70,8 +71,9 @@ enum FieldAccessFlags : u2
 /// <summary>
 /// Access flags for methods
 /// </summary>
-enum MethodAccessFlags : u2
+enum class MethodAccessFlags : u2
 {
+	ACC_UNKNOWN = 0x0000,
 	ACC_PUBLIC = 0x0001,
 	ACC_PRIVATE = 0x0002,
 	ACC_PROTECTED = 0x0004,
