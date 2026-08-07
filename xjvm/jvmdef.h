@@ -1,4 +1,6 @@
-// common definitions for the whole jvm
+/// <summary>
+/// Common definitions for the whole JVM
+/// </summary>
 
 #pragma once
 

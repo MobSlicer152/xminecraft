@@ -111,6 +111,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +149,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

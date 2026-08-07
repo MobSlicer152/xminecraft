@@ -1,4 +1,6 @@
-// Class file format
+/// <summary>
+/// Class file parsing API
+/// </summary>
 
 #pragma once
 

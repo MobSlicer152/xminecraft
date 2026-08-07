@@ -1,4 +1,6 @@
+/// <summary>
 /// Detail structs for class files
+/// </summary>
 
 #pragma once
 
@@ -38,46 +40,60 @@ struct ConstantInfo
 {
 	ConstantType tag;
 	union {
-		// 4.4.1 The CONSTANT_Class_info Structure
+		/// <summary>
+		/// 4.4.1 The CONSTANT_Class_info Structure
+		/// <summary>
 		struct
 		{
 			u2 nameIndex;
 		} classInfo;
 		
-		// 4.4.2 The CONSTANT_Fieldref_info, CONSTANT_Methodref_info, and CONSTANT_InterfaceMethodref_info Structures
+		/// <summary>
+		/// 4.4.2 The CONSTANT_Fieldref_info, CONSTANT_Methodref_info, and CONSTANT_InterfaceMethodref_info Structures
+		/// </summary>
 		struct
 		{
 			u2 classIndex;
 			u2 nameAndTypeIndex;
 		} referenceInfo;
 		
-		// 4.4.3 The CONSTANT_String_info Structure
+		/// <summary>
+		/// 4.4.3 The CONSTANT_String_info Structure
+		/// </summary>
 		struct
 		{
 			u2 stringIndex;
 		} stringInfo;
 
-		// 4.4.4 The CONSTANT_Integer_info and CONSTANT_Float_info Structures
+		/// <summary>
+		/// 4.4.4 The CONSTANT_Integer_info and CONSTANT_Float_info Structures
+		/// </summary>
 		struct
 		{
 			u4 bytes;
 		} scalar32Info;
 
-		// 4.4.5 The CONSTANT_Long_info and CONSTANT_Double_info Structures
+		/// <summary>
+		/// 4.4.5 The CONSTANT_Long_info and CONSTANT_Double_info Structures
+		/// </summary>
 		struct
 		{
 			u4 highBytes;
 			u4 lowBytes;
 		} scalar64Info;
 
-		// 4.4.6 The CONSTANT_NameAndType_info Structure
+		/// <summary>
+		/// 4.4.6 The CONSTANT_NameAndType_info Structure
+		/// </summary>
 		struct
 		{
 			u2 nameIndex;
 			u2 descriptorIndex;
 		} nameAndTypeInfo;
 
-		// 4.4.7 The CONSTANT_Utf8_info Structure
+		/// <summary>
+		/// 4.4.7 The CONSTANT_Utf8_info Structure
+		/// </summary>
 		struct
 		{
 			u2 length;

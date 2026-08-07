@@ -1,4 +1,6 @@
+/// <summary>
 /// Endianness utilities
+/// </summary>
 
 #pragma once
 
