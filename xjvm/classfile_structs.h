@@ -147,45 +147,102 @@ enum class MethodAccessFlags : u2
 	STRICT = 0x0400,
 };
 
-// 4.7 Attributes
-
 /// <summary>
-/// Attribute information
+/// 4.7 Attributes
 /// </summary>
 struct AttributeInfo
 {
 	u2 attributeNameIndex;
-	u4 attributeLength;
-	//union {
-	//};
+	std::span<u1> info;
 };
 
-// 4.5 Fields
+/// <summary>
+/// 4.7.2 The ConstantValue Attribute
+/// </summary>
+struct ConstantValueAttribute
+{
+	u2 constantValueIndex;
+};
 
 /// <summary>
-/// Field information
+/// Exception data for code attributes
+/// </summary>
+struct CodeExceptionData
+{
+	u2 startPc;
+	u2 endPc;
+	u2 handlerPc;
+	u2 catchType;
+};
+
+/// <summary>
+/// 4.7.3 The Code Attribute
+/// </summary>
+struct CodeAttribute
+{
+	u2 maxStack;
+	u2 maxLocals;
+	u4 codeLength;
+	u4 codeOffset;
+	std::span<AttributeInfo> attributes;
+	u2 exceptionCount;
+	CodeExceptionData exceptions[0];
+};
+
+/// <summary>
+/// 4.7.4 The Exceptions Attribute
+/// </summary>
+struct ExceptionsAttribute
+{
+	u2 exceptionCount;
+	u2 exceptionIndexTable[0];
+};
+
+/// <summary>
+/// Class data for inner classes attribute
+/// </summary>
+struct InnerClassData
+{
+	u2 innerClassInfoIndex;
+	u2 outerClassInfoIndex;
+	u2 innerNameIndex;
+	ClassAccessFlags innerAccessFlags;
+};
+
+/// <summary>
+/// 4.7.5 The InnerClasses Attribute
+/// </summary>
+struct InnerClassesAttribute
+{
+	u2 classCount;
+	InnerClassData classes[0];
+};
+
+struct SyntheticAttribute
+{
+
+};
+
+/// <summary>
+/// 4.5 Fields
 /// </summary>
 struct FieldInfo
 {
 	FieldAccessFlags accessFlags;
 	u2 nameIndex;
 	u2 descriptorIndex;
-	u2 attributeCount;
-	u4 attributeOffset;
+	std::span<AttributeInfo> attributes;
 };
 
-// 4.6 Methods
-
 /// <summary>
-/// Method information
+/// 4.6 Methods
 /// </summary>
 struct MethodInfo
 {
 	MethodAccessFlags accessFlags;
 	u2 nameIndex;
 	u2 descriptorIndex;
-	u2 attributeCount;
-	u4 attributeOffset;
+	std::span<AttributeInfo> attributes;
 };
 
 } // namespace XJVM

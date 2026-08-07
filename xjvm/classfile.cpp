@@ -27,22 +27,22 @@ void ClassFile::Parse(std::span<const u1> data)
 		return;
 	}
 
-	// read constant count and parse the pool
-	m_constantPoolSize = ReadNextValue<u2>(data, offset);
+	// read the constant pool
 	ParseConstantPool(data, offset);
-	if (!m_valid)
-	{
-		return;
-	}
 
+	// read access flags and class information
 	m_accessFlags = (ClassAccessFlags)ReadNextValue<u2>(data, offset);
 	m_thisClass = ReadNextValue<u2>(data, offset);
 	m_superClass = ReadNextValue<u2>(data, offset);
+
+	// read interfaces
+	ParseInterfaces(data, offset);
 }
 
 void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset)
 {
 	u2 i = 1;
+	m_constantPoolSize = ReadNextValue<u2>(data, offset);
 	while (i < m_constantPoolSize)
 	{
 		ParseConstant(data, offset, i);
@@ -146,6 +146,15 @@ void ClassFile::ParseConstant(std::span<const u1> data, u4& offset, u2& index)
 	// add the entry
 	m_constantPool[index] = info;
 	index += entryCount;
+}
+
+void ClassFile::ParseInterfaces(std::span<const u1> data, u4& offset)
+{
+	m_interfaces.resize(ReadNextValue<u2>(data, offset));
+	for (size_t i = 0; i < m_interfaces.size(); i++)
+	{
+		m_interfaces[i] = ReadNextValue<u2>(data, offset);
+	}
 }
 
 ClassFile::ClassFile(const char* fileName)

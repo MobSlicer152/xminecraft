@@ -154,7 +154,10 @@ class ClassFile
 	std::vector<AttributeInfo> m_attributes;
 
 	// all UTF-8 constants pooled together
-	std::vector<JByte> m_stringData;
+	std::vector<u1> m_stringData;
+
+	// attribute data (contains both info field and any nested variably sized arrays)
+	std::vector<u1> m_attributeData;
 
 	/// <summary>
 	/// Read the value at the offset
@@ -166,7 +169,7 @@ class ClassFile
 	template <std::integral T> T ReadValueAt(std::span<const u1> data, size_t offset)
 	{
 		assert((offset + sizeof(T)) < data.size(), "tried to read past end of class file data");
-		return NativeEndian(*(const T*)(data.data() + offset));
+		return SwapEndian(*(const T*)(data.data() + offset));
 	}
 
 	/// <summary>
@@ -185,6 +188,15 @@ class ClassFile
 	}
 
 	/// <summary>
+	/// Read a string and add it to the string buffer
+	/// </summary>
+	/// <param name="data">Class file data</param>
+	/// <param name="offset">Current offset into the class</param>
+	/// <param name="length">The length of the string</param>
+	/// <returns>The offset of the string in the string buffer</returns>
+	u4 ReadString(std::span<const u1> data, size_t& offset, u2 length);
+
+	/// <summary>
 	/// Parse a class file
 	/// </summary>
 	/// <param name="data">Class file data</param>
@@ -198,21 +210,19 @@ class ClassFile
 	void ParseConstantPool(std::span<const u1> data, u4& offset);
 
 	/// <summary>
-	/// Read a string and add it to the string buffer
-	/// </summary>
-	/// <param name="data">Class file data</param>
-	/// <param name="offset">Current offset into the class</param>
-	/// <param name="length">The length of the string</param>
-	/// <returns>The offset of the string in the string buffer</returns>
-	u4 ReadString(std::span<const u1> data, size_t& offset, u2 length);
-
-	/// <summary>
 	/// Parses a constant from the constant pool
 	/// </summary>
-	/// <param name="data">Class file data starting after constantCount</param>
+	/// <param name="data">Class file data</param>
 	/// <param name="offset">The current offset into the file</param>
 	/// <param name="index">The index of the current entry, incremented before return</param>
 	void ParseConstant(std::span<const u1> data, u4& offset, u2& index);
+
+	/// <summary>
+	/// Read the interface indices
+	/// </summary>
+	/// <param name="data">Class file data</param>
+	/// <param name="offset">The current offset into the class</param>
+	void ParseInterfaces(std::span<const u1> data, u4& offset);
 };
 
 } // namespace XJVM

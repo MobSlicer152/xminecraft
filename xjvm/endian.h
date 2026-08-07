@@ -38,30 +38,12 @@ template <std::integral T> static constexpr T Byteswap(T x)
 }
 
 /// <summary>
-/// Convert a native endian value to big endian
+/// Reverses the bytes in a value if the system endian is not big endian
 /// </summary>
 /// <typeparam name="T">The integral type of the value</typeparam>
-/// <param name="x">The native endian value to convert to big endian</param>
-/// <returns>The value in big endian</returns>
-template <std::integral T> static constexpr T BigEndian(T x)
-{
-	if constexpr (std::endian::native == std::endian::big)
-	{
-		return x;
-	}
-	else
-	{
-		return Byteswap(x);
-	}
-}
-
-/// <summary>
-/// Convert a big endian value to native endian
-/// </summary>
-/// <typeparam name="T">The integral type of the value</typeparam>
-/// <param name="x">The big endian value to convert to native endian</param>
-/// <returns>The value in native endian</returns>
-template <std::integral T> static constexpr T NativeEndian(T x)
+/// <param name="x">The value to convert</param>
+/// <returns>The reversed value</returns>
+template <std::integral T> static constexpr T SwapEndian(T x)
 {
 	if constexpr (std::endian::native == std::endian::big)
 	{
