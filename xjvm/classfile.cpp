@@ -28,23 +28,24 @@ void ClassFile::Parse(std::span<const u1> data)
 	}
 
 	// read constant count and parse the pool
-	auto constantPoolSize = ReadNextValue<u2>(data, offset);
-	ParseConstantPool(data.subspan(offset), offset, constantPoolSize);
+	m_constantPoolSize = ReadNextValue<u2>(data, offset);
+	ParseConstantPool(data, offset);
 	if (!m_valid)
 	{
 		return;
 	}
+
+	m_accessFlags = (ClassAccessFlags)ReadNextValue<u2>(data, offset);
+	m_thisClass = ReadNextValue<u2>(data, offset);
+	m_superClass = ReadNextValue<u2>(data, offset);
 }
 
-void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset, u2 poolSize)
+void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset)
 {
-	if (poolSize > 0)
+	u2 i = 1;
+	while (i < m_constantPoolSize)
 	{
-		u2 i = 0;
-		while (i < poolSize - 1)
-		{
-			ParseConstant(data, offset, i);
-		}
+		ParseConstant(data, offset, i);
 	}
 }
 
@@ -56,6 +57,37 @@ XJVM::u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 leng
 	memcpy(&m_stringData[strOffset], &data[offset], length);
 	offset += length;
 	return strOffset;
+}
+
+const std::string_view ClassFile::GetString(const ConstantInfo& constant) const
+{
+	u2 index;
+	switch (constant.tag)
+	{
+	// for a utf8 value, just load it
+	case ConstantType::Utf8: {
+		return std::string_view((const char*)&m_stringData[constant.utf8Info.bytesOffset], constant.utf8Info.length);
+	}
+	// for a string, get its utf8 value and look that up
+	case ConstantType::String: {
+		index = constant.stringInfo.stringIndex;
+		break;
+	}
+	// for a class, get its name
+	case ConstantType::Class: {
+		index = constant.classInfo.nameIndex;
+		break;
+	}
+	}
+
+	if (m_constantPool.contains(index))
+	{
+		const auto& utf8Const = m_constantPool.at(index);
+		assert(utf8Const.tag == ConstantType::Utf8, "string constant references non-UTF-8 constant");
+		return GetString(utf8Const);
+	}
+
+	return {};
 }
 
 void ClassFile::ParseConstant(std::span<const u1> data, u4& offset, u2& index)
@@ -103,7 +135,6 @@ void ClassFile::ParseConstant(std::span<const u1> data, u4& offset, u2& index)
 	case ConstantType::Utf8: {
 		info.utf8Info.length = ReadNextValue<u2>(data, offset);
 		info.utf8Info.bytesOffset = ReadString(data, offset, info.utf8Info.length);
-		printf("utf-8 constant %u has value %.*s\n", index, info.utf8Info.length, &m_stringData[info.utf8Info.bytesOffset]);
 		break;
 	}
 	default: {

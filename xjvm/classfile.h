@@ -3,6 +3,7 @@
 #pragma once
 
 #include <map>
+#include <string_view>
 #include <vector>
 
 #include "classfile_structs.h"
@@ -63,15 +64,84 @@ class ClassFile
 		return m_minorVersion;
 	}
 
+	/// <summary>
+	/// Get a constant
+	/// </summary>
+	const ConstantInfo& GetConstant(u2 index) const
+	{
+		if (m_constantPool.contains(index))
+		{
+			return m_constantPool.at(index);
+		}
+
+		return CONSTANT_PAD_ENTRY;
+	}
+
+	/// <summary>
+	/// Get the number of constants in the constant pool
+	/// </summary>
+	/// <returns>The number of constants</returns>
+	u2 GetConstantPoolSize() const
+	{
+		return m_constantPoolSize;
+	}
+
+	/// <summary>
+	/// Get a string from a UTF-8 constant
+	/// </summary>
+	/// <param name="constant">The constant to read from</param>
+	/// <returns>The string pointed to, or nothing if not a string constant</returns>
+	const std::string_view GetString(const ConstantInfo& constant) const;
+
+	/// <summary>
+	/// Get a string from a UTF-8 constant
+	/// </summary>
+	/// <param name="constant">The index of the constant to read from</param>
+	/// <returns>The string pointed to, or nothing if not a string constant</returns>
+	const std::string_view GetString(u2 index) const
+	{
+		return GetString(GetConstant(index));
+	}
+
+	/// <summary>
+	/// Get the class's access flags
+	/// </summary>
+	/// <returns>The access flags</returns>
+	ClassAccessFlags GetAccessFlags() const
+	{
+		return m_accessFlags;
+	}
+
+	/// <summary>
+	/// Get this class's constant info
+	/// </summary>
+	/// <returns>The constant</returns>
+	const ConstantInfo& GetThisClass() const
+	{
+		return GetConstant(m_thisClass);
+	}
+
+	/// <summary>
+	/// Get this class's super class's constant info
+	/// </summary>
+	/// <returns>The constant</returns>
+	const ConstantInfo& GetSuperClass() const
+	{
+		return GetConstant(m_superClass);
+	}
+
   private:
 	static constexpr u4 MAGIC = 0xCAFEBABE;
 	static constexpr u2 MAJOR_VERSION = 50; // Java SE 6
+
+	static constexpr ConstantInfo CONSTANT_PAD_ENTRY = {};
 
 	bool m_valid = false;
 
 	u4 m_magic = MAGIC;
 	u2 m_minorVersion = 0;
 	u2 m_majorVersion = MAJOR_VERSION;
+	u2 m_constantPoolSize;
 	std::map<u2, ConstantInfo> m_constantPool;
 	ClassAccessFlags m_accessFlags = ClassAccessFlags::UNKNOWN;
 	u2 m_thisClass = 0;
@@ -123,8 +193,7 @@ class ClassFile
 	/// </summary>
 	/// <param name="data">Class file data</param>
 	/// <param name="offset">The current offset into the file</param>
-	/// <param name="poolSize">The number of entries in the constant pool</param>
-	void ParseConstantPool(std::span<const u1> data, u4& offset, u2 poolSize);
+	void ParseConstantPool(std::span<const u1> data, u4& offset);
 
 	/// <summary>
 	/// Read a string and add it to the string buffer
