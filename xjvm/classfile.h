@@ -1,6 +1,4 @@
-/// <summary>
 /// Class file parsing API
-/// </summary>
 
 #pragma once
 
@@ -151,8 +149,8 @@ class ClassFile
 	u2 m_thisClass = 0;
 	u2 m_superClass = 0;
 	std::vector<u2> m_interfaces;
-	std::vector<FieldInfo> m_fields;
-	std::vector<MethodInfo> m_methods;
+	std::vector<MemberInfo> m_fields;
+	std::vector<MemberInfo> m_methods;
 	std::vector<AttributeInfo> m_attributes;
 
 	// all UTF-8 constants pooled together
@@ -225,6 +223,27 @@ class ClassFile
 	/// <param name="data">Class file data</param>
 	/// <param name="offset">The current offset into the class</param>
 	void ParseInterfaces(std::span<const u1> data, u4& offset);
+
+	/// <summary>
+	/// Parse fields and methods
+	/// </summary>
+	/// <param name="data">Class file data</param>
+	/// <param name="offset">The current offset into the class</param>
+	void ParseMembers(std::span<const u1> data, u4& offset);
+
+	/// <summary>
+	/// Parse a field or method
+	/// </summary>
+	/// <param name="data">Class file data</param>
+	/// <param name="offset">The current offset into the class</param>
+	void ParseMember(std::span<const u1> data, u4& offset);
+
+	/// <summary>
+	/// Parse an attribute
+	/// </summary>
+	/// <param name="data">Class file data</param>
+	/// <param name="offset">The current offset into the class</param>
+	void ParseAttribute(std::span<const u1> data, u4& offset);
 };
 
 } // namespace XJVM

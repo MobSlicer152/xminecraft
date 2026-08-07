@@ -1,6 +1,4 @@
-/// <summary>
 /// Detail structs for class files
-/// </summary>
 
 #pragma once
 
@@ -116,24 +114,9 @@ enum class ClassAccessFlags : u2
 };
 
 /// <summary>
-/// Access flags for fields
+/// Access flags for members
 /// </summary>
-enum class FieldAccessFlags : u2
-{
-	UNKNOWN = 0x0000,
-	PUBLIC = 0x0001,
-	PRIVATE = 0x0002,
-	PROTECTED = 0x0004,
-	STATIC = 0x0008,
-	FINAL = 0x0010,
-	VOLATILE = 0x0040,
-	TRANSIENT = 0x0080,
-};
-
-/// <summary>
-/// Access flags for methods
-/// </summary>
-enum class MethodAccessFlags : u2
+enum class MemberAccessFlags : u2
 {
 	UNKNOWN = 0x0000,
 	PUBLIC = 0x0001,
@@ -142,6 +125,8 @@ enum class MethodAccessFlags : u2
 	STATIC = 0x0008,
 	FINAL = 0x0010,
 	SYNCHRONIZED = 0x0020,
+	TRANSIENT = 0x0080,
+	VOLATILE = 0x0040,
 	NATIVE = 0x0100,
 	ABSTRACT = 0x0200,
 	STRICT = 0x0400,
@@ -152,7 +137,7 @@ enum class MethodAccessFlags : u2
 /// </summary>
 struct AttributeInfo
 {
-	u2 attributeNameIndex;
+	const std::string_view name;
 	std::span<u1> info;
 };
 
@@ -220,28 +205,24 @@ struct InnerClassesAttribute
 
 struct SyntheticAttribute
 {
+};
 
+enum class MemberType
+{
+	Field = 0,
+	Method = 1
 };
 
 /// <summary>
 /// 4.5 Fields
-/// </summary>
-struct FieldInfo
-{
-	FieldAccessFlags accessFlags;
-	u2 nameIndex;
-	u2 descriptorIndex;
-	std::span<AttributeInfo> attributes;
-};
-
-/// <summary>
 /// 4.6 Methods
 /// </summary>
-struct MethodInfo
+struct MemberInfo
 {
-	MethodAccessFlags accessFlags;
-	u2 nameIndex;
-	u2 descriptorIndex;
+	MemberType type;
+	MemberAccessFlags accessFlags;
+	std::string_view name;
+	std::string_view descriptor;
 	std::span<AttributeInfo> attributes;
 };
 

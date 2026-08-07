@@ -1,7 +1,7 @@
 #define NO_STRICT
 #include <print>
 #include <windows.h>
-#include "../xjvm/classfile.h"
+#include "../xjvm/xjvm.h"
 
 int main(int argc, char* argv[])
 {
