@@ -1,55 +1,159 @@
-#include <any>
-#include <cstdio>
-#include <vector>
-
-#include "classfile.h"
+#include "stdafx.h"
 
 using namespace XJVM;
 
 void ClassFile::Parse(std::span<const u1> data)
 {
-	// initially, the file is valid until proven otherwise
+	// the file is valid until proven otherwise
 	m_valid = true;
+	size_t offset = 0;
 
-	// read and check the header
-	ReadHeader(data);
-	if (!m_valid)
-	{
-		return;
-	}
-
-	// do an initial parse of the data to figure out how much space is needed
-	ScanDataSize(data);
-	if (!m_valid)
-	{
-		return;
-	}
-
-	// parse the data fully now
-	ParseConstantPool(data);
-}
-
-void ClassFile::ScanDataSize(std::span<const u1> data)
-{
-	ParseConstantPool(data);
-}
-
-void ClassFile::ParseConstantPool(std::span<const u1> data)
-{
-}
-
-u4 ClassFile::ParseConstant(u2 index, u4 offset /*= UINT32_MAX*/)
-{
-	return 0;
-}
-
-void ClassFile::ReadHeader(std::span<const u1> data)
-{
-	m_magic = ReadValue<u4>(data, 0);
+	// read and check magic
+	m_magic = ReadNextValue<u4>(data, offset);
 	if (m_magic != MAGIC)
 	{
+		printf("class has incorrect magic 0x%08X\n", m_magic);
 		m_valid = false;
 		return;
+	}
+
+	// read and check version
+	m_minorVersion = ReadNextValue<u2>(data, offset);
+	m_majorVersion = ReadNextValue<u2>(data, offset);
+	if (m_majorVersion != MAJOR_VERSION)
+	{
+		printf("class version %hu.%hu does not match supported version %hu\n", m_majorVersion, m_minorVersion, MAJOR_VERSION);
+		m_valid = false;
+		return;
+	}
+
+	// read the constant pool
+	ParseConstantPool(data, offset);
+
+	// read access flags and class information
+	m_accessFlags = (ClassAccessFlags)ReadNextValue<u2>(data, offset);
+	m_thisClass = ReadNextValue<u2>(data, offset);
+	m_superClass = ReadNextValue<u2>(data, offset);
+
+	// read interfaces
+	ParseInterfaces(data, offset);
+}
+
+void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset)
+{
+	u2 i = 1;
+	m_constantPoolSize = ReadNextValue<u2>(data, offset);
+	while (i < m_constantPoolSize)
+	{
+		ParseConstant(data, offset, i);
+	}
+}
+
+XJVM::u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 length)
+{
+	assert((offset + length) < data.size(), "tried to read past end of class file data");
+	auto strOffset = m_stringData.size();
+	m_stringData.resize(m_stringData.size() + length);
+	memcpy(&m_stringData[strOffset], &data[offset], length);
+	offset += length;
+	return strOffset;
+}
+
+const std::string_view ClassFile::GetString(const ConstantInfo& constant) const
+{
+	u2 index;
+	switch (constant.tag)
+	{
+	// for a utf8 value, just load it
+	case ConstantType::Utf8: {
+		return std::string_view((const char*)&m_stringData[constant.utf8Info.bytesOffset], constant.utf8Info.length);
+	}
+	// for a string, get its utf8 value and look that up
+	case ConstantType::String: {
+		index = constant.stringInfo.stringIndex;
+		break;
+	}
+	// for a class, get its name
+	case ConstantType::Class: {
+		index = constant.classInfo.nameIndex;
+		break;
+	}
+	}
+
+	if (m_constantPool.contains(index))
+	{
+		const auto& utf8Const = m_constantPool.at(index);
+		assert(utf8Const.tag == ConstantType::Utf8, "string constant references non-UTF-8 constant");
+		return GetString(utf8Const);
+	}
+
+	return {};
+}
+
+void ClassFile::ParseConstant(std::span<const u1> data, u4& offset, u2& index)
+{
+	// 2 for some types
+	auto entryCount = 1;
+
+	// parse the constant
+	ConstantInfo info = {};
+	info.tag = (ConstantType)ReadNextValue<u1>(data, offset);
+	switch (info.tag)
+	{
+	case ConstantType::Class: {
+		info.classInfo.nameIndex = ReadNextValue<u2>(data, offset);
+		break;
+	}
+	case ConstantType::Fieldref:
+	case ConstantType::Methodref:
+	case ConstantType::InterfaceMethodref: {
+		info.referenceInfo.classIndex = ReadNextValue<u2>(data, offset);
+		info.referenceInfo.nameAndTypeIndex = ReadNextValue<u2>(data, offset);
+		break;
+	}
+	case ConstantType::String: {
+		info.stringInfo.stringIndex = ReadNextValue<u2>(data, offset);
+		break;
+	}
+	case ConstantType::Integer:
+	case ConstantType::Float: {
+		info.scalar32Info.bytes = ReadNextValue<u4>(data, offset);
+		break;
+	}
+	case ConstantType::Long:
+	case ConstantType::Double: {
+		info.scalar64Info.highBytes = ReadNextValue<u4>(data, offset);
+		info.scalar64Info.lowBytes = ReadNextValue<u4>(data, offset);
+		entryCount = 2;
+		break;
+	}
+	case ConstantType::NameAndType: {
+		info.nameAndTypeInfo.nameIndex = ReadNextValue<u2>(data, offset);
+		info.nameAndTypeInfo.descriptorIndex = ReadNextValue<u2>(data, offset);
+		break;
+	}
+	case ConstantType::Utf8: {
+		info.utf8Info.length = ReadNextValue<u2>(data, offset);
+		info.utf8Info.bytesOffset = ReadString(data, offset, info.utf8Info.length);
+		break;
+	}
+	default: {
+		printf("constant %u has unknown tag %u\n", index, info.tag);
+		break;
+	}
+	}
+
+	// add the entry
+	m_constantPool[index] = info;
+	index += entryCount;
+}
+
+void ClassFile::ParseInterfaces(std::span<const u1> data, u4& offset)
+{
+	m_interfaces.resize(ReadNextValue<u2>(data, offset));
+	for (size_t i = 0; i < m_interfaces.size(); i++)
+	{
+		m_interfaces[i] = ReadNextValue<u2>(data, offset);
 	}
 }
 
@@ -76,17 +180,4 @@ ClassFile::ClassFile(const char* fileName)
 ClassFile::ClassFile(std::span<const u1> classData)
 {
 	Parse(classData);
-}
-
-ClassFile::~ClassFile()
-{
-	// NOTE: do not put anything that has a destructor that matters in here
-	void* ptrs[] = {m_constantPool, m_fields, m_methods, m_attributes, m_data};
-	for (auto ptr : ptrs)
-	{
-		if (ptr)
-		{
-			delete[] ptr;
-		}
-	}
 }

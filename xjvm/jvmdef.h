@@ -1,10 +1,11 @@
-// common definitions for the whole jvm
+/// <summary>
+/// Common definitions for the whole JVM
+/// </summary>
 
 #pragma once
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <bit>
+#include <cassert>
 #include <concepts>
 #include <cstdint>
 #include <limits>
