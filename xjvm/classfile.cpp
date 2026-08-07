@@ -59,7 +59,7 @@ XJVM::u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 leng
 	return strOffset;
 }
 
-const std::string_view ClassFile::GetString(const ConstantInfo& constant) const
+const std::string_view ClassFile::GetString(const ConstantInfo& constant, bool getDescriptor) const
 {
 	u2 index;
 	switch (constant.tag)
@@ -78,12 +78,24 @@ const std::string_view ClassFile::GetString(const ConstantInfo& constant) const
 		index = constant.classInfo.nameIndex;
 		break;
 	}
+	// for a reference, get its name-and-type
+	case ConstantType::Fieldref:
+	case ConstantType::Methodref:
+	case ConstantType::InterfaceMethodref: {
+		index = constant.referenceInfo.nameAndTypeIndex;
+		break;
+	}
+	// for a name and type, get the name
+	case ConstantType::NameAndType: {
+		index = getDescriptor ? constant.nameAndTypeInfo.descriptorIndex : constant.nameAndTypeInfo.nameIndex;
+		break;
+	}
 	}
 
+	// if this wasn't a utf8, recurse
 	if (m_constantPool.contains(index))
 	{
 		const auto& utf8Const = m_constantPool.at(index);
-		assert(utf8Const.tag == ConstantType::Utf8, "string constant references non-UTF-8 constant");
 		return GetString(utf8Const);
 	}
 

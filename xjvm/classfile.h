@@ -89,20 +89,22 @@ class ClassFile
 	}
 
 	/// <summary>
-	/// Get a string from a UTF-8 constant
+	/// Get a string for a constant
 	/// </summary>
 	/// <param name="constant">The constant to read from</param>
+	/// <param name="getDescriptor>Get the descriptor instead of the name of a reference</param>
 	/// <returns>The string pointed to, or nothing if not a string constant</returns>
-	const std::string_view GetString(const ConstantInfo& constant) const;
+	const std::string_view GetString(const ConstantInfo& constant, bool getDescriptor = false) const;
 
 	/// <summary>
-	/// Get a string from a UTF-8 constant
+	/// Get a string for a constant
 	/// </summary>
 	/// <param name="constant">The index of the constant to read from</param>
+	/// <param name="getDescriptor>Get the descriptor instead of the name of a reference</param>
 	/// <returns>The string pointed to, or nothing if not a string constant</returns>
-	const std::string_view GetString(u2 index) const
+	const std::string_view GetString(u2 index, bool getDescriptor = false) const
 	{
-		return GetString(GetConstant(index));
+		return GetString(GetConstant(index), getDescriptor);
 	}
 
 	/// <summary>

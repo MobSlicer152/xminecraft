@@ -12,6 +12,8 @@ Instead, for the sake of learning, simplicity (ha), and as a flex, I'm just writ
 I'm about two thirds done parsing class files, and I plan to get some basic bytecode processing done after that.
 I might also try JIT, if it's feasible.
 
+Security and class file validation isn't really a priority, the point is to run known-good code from Minecraft.
+
 ## Base game modifications
 
 I plan to add controller support, and try to optimize the game's memory usage as much as I can. Hopefully that makes
