@@ -1,3 +1,4 @@
+#define NO_STRICT
 #include <cstdio>
 #include <windows.h>
 #include "../xjvm/classfile.h"
@@ -16,6 +17,8 @@ int main(int argc, char* argv[])
 		printf("failed to parse class %s\n", argv[1]);
 		return ERROR_INVALID_DATA;
 	}
+
+	printf("class is version %hu.%hu\n", test.GetMajorVersion(), test.GetMinorVersion());
 
 	return ERROR_SUCCESS;
 }

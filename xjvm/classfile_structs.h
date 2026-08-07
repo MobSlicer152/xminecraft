@@ -9,9 +9,9 @@ namespace XJVM
 
 // types for parsing classes
 
-typedef uint8_t u1;
-typedef uint16_t u2;
-typedef uint32_t u4;
+using u1 = uint8_t;
+using u2 = uint16_t;
+using u4 = uint32_t;
 
 // 4.4 The Constant Pool
 
@@ -20,24 +20,70 @@ typedef uint32_t u4;
 /// </summary>
 enum class ConstantType : u1
 {
-	CONSTANT_Class = 7,
-	CONSTANT_Fieldref = 9,
-	CONSTANT_Methodref = 10,
-	CONSTANT_InterfaceMethodref = 11,
-	CONSTANT_String = 8,
-	CONSTANT_Integer = 3,
-	CONSTANT_Float = 4,
-	CONSTANT_Long = 5,
-	CONSTANT_Double = 6,
-	CONSTANT_NameAndType = 12,
-	CONSTANT_Utf8 = 1,
-	CONSTANT_Unknown = 0,
+	Class = 7,
+	Fieldref = 9,
+	Methodref = 10,
+	InterfaceMethodref = 11,
+	String = 8,
+	Integer = 3,
+	Float = 4,
+	Long = 5,
+	Double = 6,
+	NameAndType = 12,
+	Utf8 = 1,
+	Unknown = 0,
 };
 
 struct ConstantInfo
 {
 	ConstantType tag;
-	u4 infoOffset;
+	union {
+		// 4.4.1 The CONSTANT_Class_info Structure
+		struct
+		{
+			u2 nameIndex;
+		} classInfo;
+		
+		// 4.4.2 The CONSTANT_Fieldref_info, CONSTANT_Methodref_info, and CONSTANT_InterfaceMethodref_info Structures
+		struct
+		{
+			u2 classIndex;
+			u2 nameAndTypeIndex;
+		} referenceInfo;
+		
+		// 4.4.3 The CONSTANT_String_info Structure
+		struct
+		{
+			u2 stringIndex;
+		} stringInfo;
+
+		// 4.4.4 The CONSTANT_Integer_info and CONSTANT_Float_info Structures
+		struct
+		{
+			u4 bytes;
+		} scalar32Info;
+
+		// 4.4.5 The CONSTANT_Long_info and CONSTANT_Double_info Structures
+		struct
+		{
+			u4 highBytes;
+			u4 lowBytes;
+		} scalar64Info;
+
+		// 4.4.6 The CONSTANT_NameAndType_info Structure
+		struct
+		{
+			u2 nameIndex;
+			u2 descriptorIndex;
+		} nameAndTypeInfo;
+
+		// 4.4.7 The CONSTANT_Utf8_info Structure
+		struct
+		{
+			u2 length;
+			u4 bytesOffset;
+		} utf8Info;
+	};
 };
 
 /// <summary>
@@ -45,12 +91,12 @@ struct ConstantInfo
 /// </summary>
 enum class ClassAccessFlags : u2
 {
-	ACC_UNKNOWN = 0x0000,
-	ACC_PUBLIC = 0x0001,
-	ACC_FINAL = 0x0010,
-	ACC_SUPER = 0x0020,
-	ACC_INTERFACE = 0x0200,
-	ACC_ABSTRACT = 0x0400,
+	UNKNOWN = 0x0000,
+	PUBLIC = 0x0001,
+	FINAL = 0x0010,
+	SUPER = 0x0020,
+	INTERFACE = 0x0200,
+	ABSTRACT = 0x0400,
 };
 
 /// <summary>
@@ -58,14 +104,14 @@ enum class ClassAccessFlags : u2
 /// </summary>
 enum class FieldAccessFlags : u2
 {
-	ACC_UNKNOWN = 0x0000,
-	ACC_PUBLIC = 0x0001,
-	ACC_PRIVATE = 0x0002,
-	ACC_PROTECTED = 0x0004,
-	ACC_STATIC = 0x0008,
-	ACC_FINAL = 0x0010,
-	ACC_VOLATILE = 0x0040,
-	ACC_TRANSIENT = 0x0080,
+	UNKNOWN = 0x0000,
+	PUBLIC = 0x0001,
+	PRIVATE = 0x0002,
+	PROTECTED = 0x0004,
+	STATIC = 0x0008,
+	FINAL = 0x0010,
+	VOLATILE = 0x0040,
+	TRANSIENT = 0x0080,
 };
 
 /// <summary>
@@ -73,16 +119,16 @@ enum class FieldAccessFlags : u2
 /// </summary>
 enum class MethodAccessFlags : u2
 {
-	ACC_UNKNOWN = 0x0000,
-	ACC_PUBLIC = 0x0001,
-	ACC_PRIVATE = 0x0002,
-	ACC_PROTECTED = 0x0004,
-	ACC_STATIC = 0x0008,
-	ACC_FINAL = 0x0010,
-	ACC_SYNCHRONIZED = 0x0020,
-	ACC_NATIVE = 0x0100,
-	ACC_ABSTRACT = 0x0200,
-	ACC_STRICT = 0x0400
+	UNKNOWN = 0x0000,
+	PUBLIC = 0x0001,
+	PRIVATE = 0x0002,
+	PROTECTED = 0x0004,
+	STATIC = 0x0008,
+	FINAL = 0x0010,
+	SYNCHRONIZED = 0x0020,
+	NATIVE = 0x0100,
+	ABSTRACT = 0x0200,
+	STRICT = 0x0400,
 };
 
 // 4.7 Attributes
@@ -94,7 +140,8 @@ struct AttributeInfo
 {
 	u2 attributeNameIndex;
 	u4 attributeLength;
-	u4 infoOffset;
+	//union {
+	//};
 };
 
 // 4.5 Fields
@@ -104,7 +151,7 @@ struct AttributeInfo
 /// </summary>
 struct FieldInfo
 {
-	u2 accessFlags;
+	FieldAccessFlags accessFlags;
 	u2 nameIndex;
 	u2 descriptorIndex;
 	u2 attributeCount;
@@ -118,11 +165,11 @@ struct FieldInfo
 /// </summary>
 struct MethodInfo
 {
-	u2 accessFlags;
+	MethodAccessFlags accessFlags;
 	u2 nameIndex;
 	u2 descriptorIndex;
 	u2 attributeCount;
 	u4 attributeOffset;
 };
 
-}
+} // namespace XJVM

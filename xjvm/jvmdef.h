@@ -2,9 +2,8 @@
 
 #pragma once
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <bit>
+#include <cassert>
 #include <concepts>
 #include <cstdint>
 #include <limits>

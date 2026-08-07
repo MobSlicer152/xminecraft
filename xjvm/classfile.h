@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include <map>
+#include <vector>
+
 #include "classfile_structs.h"
 #include "endian.h"
 #include "jvmdef.h"
@@ -30,9 +33,9 @@ class ClassFile
 	ClassFile(std::span<const u1> classData);
 
 	/// <summary>
-	/// Free all the allocated structures in this class
+	/// Clean up the class file
 	/// </summary>
-	~ClassFile();
+	~ClassFile() = default;
 
 	/// <summary>
 	/// Whether the class was successfully parsed
@@ -42,42 +45,71 @@ class ClassFile
 		return m_valid;
 	}
 
+	/// <summary>
+	/// Get the major version of the class file
+	/// </summary>
+	/// <returns>The major version of the class file</returns>
+	u2 GetMajorVersion() const
+	{
+		return m_majorVersion;
+	}
+
+	/// <summary>
+	/// Get the minor version of the class file
+	/// </summary>
+	/// <returns>The minor version of the class file</returns>
+	u2 GetMinorVersion() const
+	{
+		return m_minorVersion;
+	}
+
   private:
 	static constexpr u4 MAGIC = 0xCAFEBABE;
-	static constexpr u2 MAJOR_VERSION = 68; // Java SE 6
+	static constexpr u2 MAJOR_VERSION = 50; // Java SE 6
 
 	bool m_valid = false;
 
 	u4 m_magic = MAGIC;
-	u2 m_majorVersion = MAJOR_VERSION;
 	u2 m_minorVersion = 0;
-	u2 m_constantCount = 0;
-	ConstantInfo* m_constantPool = nullptr;
-	ClassAccessFlags m_accessFlags = ClassAccessFlags::ACC_UNKNOWN;
+	u2 m_majorVersion = MAJOR_VERSION;
+	std::map<u2, ConstantInfo> m_constantPool;
+	ClassAccessFlags m_accessFlags = ClassAccessFlags::UNKNOWN;
 	u2 m_thisClass = 0;
 	u2 m_superClass = 0;
-	u2 m_interfaceCount = 0;
-	u2* m_interfaces = nullptr;
-	u2 m_fieldCount = 0;
-	FieldInfo* m_fields = nullptr;
-	u2 m_methodCount = 0;
-	MethodInfo* m_methods = nullptr;
-	u2 m_attributeCount = 0;
-	AttributeInfo* m_attributes = nullptr;
+	std::vector<u2> m_interfaces;
+	std::vector<FieldInfo> m_fields;
+	std::vector<MethodInfo> m_methods;
+	std::vector<AttributeInfo> m_attributes;
 
-	// combined data for nested variably sized arrays (java class files are a bad format to parse)
-	u1* m_data = nullptr;
-	size_t m_dataSize = 0;
+	// all UTF-8 constants pooled together
+	std::vector<JByte> m_stringData;
 
-	std::span<u1> m_constantData;
-	std::span<u1> m_fieldData;
-	std::span<u1> m_methodData;
-	std::span<u1> m_attributeData;
-
-	template <std::integral T>
-	T ReadValue(std::span<const u1> data, size_t offset)
+	/// <summary>
+	/// Read the value at the offset
+	/// </summary>
+	/// <typeparam name="T">The type of value to read</typeparam>
+	/// <param name="data">Class file data</param>
+	/// <param name="offset">Current offset into the class</param>
+	/// <returns>The value read</returns>
+	template <std::integral T> T ReadValueAt(std::span<const u1> data, size_t offset)
 	{
+		assert((offset + sizeof(T)) < data.size(), "tried to read past end of class file data");
 		return NativeEndian(*(const T*)(data.data() + offset));
+	}
+
+	/// <summary>
+	/// Read the value at the offset and advance by its size
+	/// </summary>
+	/// <typeparam name="T">The type of value to read</typeparam>
+	/// <param name="data">Class file data</param>
+	/// <param name="offset">Current offset into the class</param>
+	/// <returns>The value read</returns>
+	template <std::integral T>
+	T ReadNextValue(std::span<const u1> data, size_t& offset)
+	{
+		auto value = ReadValueAt<T>(data, offset);
+		offset += sizeof(T);
+		return value;
 	}
 
 	/// <summary>
@@ -87,31 +119,29 @@ class ClassFile
 	void Parse(std::span<const u1> data);
 	
 	/// <summary>
-	/// Scans the size needed for m_data
+	/// Parses the constant pool
 	/// </summary>
 	/// <param name="data">Class file data</param>
-	void ScanDataSize(std::span<const u1> data);
+	/// <param name="offset">The current offset into the file</param>
+	/// <param name="poolSize">The number of entries in the constant pool</param>
+	void ParseConstantPool(std::span<const u1> data, u4& offset, u2 poolSize);
 
 	/// <summary>
-	/// Parses basic fields from the header
+	/// Read a string and add it to the string buffer
 	/// </summary>
 	/// <param name="data">Class file data</param>
-	void ReadHeader(std::span<const u1> data);
-
-	/// <summary>
-	/// Parses the constant pool if m_data is allocated, otherwise adds the size needed to m_dataSize.
-	/// </summary>
-	void ParseConstantPool(std::span<const u1> data);
+	/// <param name="offset">Current offset into the class</param>
+	/// <param name="length">The length of the string</param>
+	/// <returns>The offset of the string in the string buffer</returns>
+	u4 ReadString(std::span<const u1> data, size_t& offset, u2 length);
 
 	/// <summary>
 	/// Parses a constant from the constant pool
 	/// </summary>
-	/// <param name="index>The index of the constant to parse</param>
-	/// <param name="offset">
-	/// The offset into m_constantData to write the result to, or UINT32_MAX to indicate size calculation only
-	/// </param>
-	/// <returns>The size of this constant</returns>
-	u4 ParseConstant(u2 index, u4 offset = UINT32_MAX);
+	/// <param name="data">Class file data starting after constantCount</param>
+	/// <param name="offset">The current offset into the file</param>
+	/// <param name="index">The index of the current entry, incremented before return</param>
+	void ParseConstant(std::span<const u1> data, u4& offset, u2& index);
 };
 
 } // namespace XJVM
