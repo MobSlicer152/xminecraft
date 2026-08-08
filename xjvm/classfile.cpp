@@ -49,7 +49,7 @@ void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset)
 	}
 }
 
-XJVM::u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 length)
+u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 length)
 {
 	assert((offset + length) < data.size(), "tried to read past end of class file data");
 	auto strOffset = m_stringData.size();
@@ -59,14 +59,14 @@ XJVM::u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 leng
 	return strOffset;
 }
 
-const std::string_view ClassFile::GetString(const ConstantInfo& constant, bool getDescriptor) const
+ConstOffsetStringView ClassFile::GetStringOffset(const ConstantInfo& constant, bool getDescriptor /*= false*/) const
 {
 	u2 index;
 	switch (constant.tag)
 	{
 	// for a utf8 value, just load it
 	case ConstantType::Utf8: {
-		return std::string_view((const char*)&m_stringData[constant.utf8Info.bytesOffset], constant.utf8Info.length);
+		return ConstOffsetStringView(constant.utf8Info.bytesOffset, constant.utf8Info.length);
 	}
 	// for a string, get its utf8 value and look that up
 	case ConstantType::String: {
@@ -96,10 +96,15 @@ const std::string_view ClassFile::GetString(const ConstantInfo& constant, bool g
 	if (m_constantPool.contains(index))
 	{
 		const auto& utf8Const = m_constantPool.at(index);
-		return GetString(utf8Const);
+		return GetStringOffset(utf8Const);
 	}
 
 	return {};
+}
+
+const std::string_view ClassFile::GetString(const ConstantInfo& constant, bool getDescriptor) const
+{
+	return GetStringOffset(constant, getDescriptor).StringView((const void*)m_stringData.data());
 }
 
 void ClassFile::ParseConstant(std::span<const u1> data, u4& offset, u2& index)
@@ -166,6 +171,45 @@ void ClassFile::ParseInterfaces(std::span<const u1> data, u4& offset)
 	for (size_t i = 0; i < m_interfaces.size(); i++)
 	{
 		m_interfaces[i] = ReadNextValue<u2>(data, offset);
+	}
+}
+
+void XJVM::ClassFile::ParseMembers(std::span<const u1> data, u4& offset)
+{
+	// read fields
+	m_fields.resize(ReadNextValue<u2>(data, offset));
+	for (auto& field : m_fields)
+	{
+		ParseMember(data, offset, field, MemberType::Field);
+	}
+
+	// read methods
+	m_methods.resize(ReadNextValue<u2>(data, offset));
+	for (auto& method : m_methods)
+	{
+		ParseMember(data, offset, method, MemberType::Method);
+	}
+}
+
+void XJVM::ClassFile::ParseMember(std::span<const u1> data, u4& offset, MemberInfo& info, MemberType type)
+{
+	info.type = type;
+	info.accessFlags = (MemberAccessFlags)ReadNextValue<u2>(data, offset);
+	info.name = GetStringOffset(ReadNextValue<u2>(data, offset)); // read the name index and get it
+	info.descriptor = GetStringOffset(ReadNextValue<u2>(data, offset)); // read the descriptor index and get it
+	info.attributes = ParseAttributes(data, offset);
+}
+
+OffsetSpan<const AttributeInfo> XJVM::ClassFile::ParseAttributes(std::span<const u1> data, u4& offset)
+{
+	// attributes_count
+	auto span = OffsetSpan<AttributeInfo>(m_attributes.size(), ReadNextValue<u2>(data, offset));
+	m_attributes.resize(m_attributes.size() + span.Size());
+
+	for (auto& attrib : span.View(m_attributes.data()))
+	{
+		attrib.name = GetStringOffset(ReadNextValue<u2>(data, offset));
+		attrib.info = ParseAttributeInfo(data, offset);
 	}
 }
 

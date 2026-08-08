@@ -10,5 +10,6 @@
 #include "endian.h"
 #include "field_descriptor.h"
 #include "jvmdef.h"
+#include "offspan.h"
 
 #pragma warning(pop)

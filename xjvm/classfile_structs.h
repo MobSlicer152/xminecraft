@@ -3,6 +3,7 @@
 #pragma once
 
 #include "jvmdef.h"
+#include "offspan.h"
 
 namespace XJVM
 {
@@ -137,8 +138,8 @@ enum class MemberAccessFlags : u2
 /// </summary>
 struct AttributeInfo
 {
-	const std::string_view name;
-	std::span<u1> info;
+	ConstOffsetStringView name;
+	OffsetSpan<const u1> info;
 };
 
 /// <summary>
@@ -169,7 +170,7 @@ struct CodeAttribute
 	u2 maxLocals;
 	u4 codeLength;
 	u4 codeOffset;
-	std::span<AttributeInfo> attributes;
+	OffsetSpan<const AttributeInfo> attributes;
 	u2 exceptionCount;
 	CodeExceptionData exceptions[0];
 };
@@ -221,9 +222,9 @@ struct MemberInfo
 {
 	MemberType type;
 	MemberAccessFlags accessFlags;
-	std::string_view name;
-	std::string_view descriptor;
-	std::span<AttributeInfo> attributes;
+	ConstOffsetStringView name;
+	ConstOffsetStringView descriptor;
+	OffsetSpan<const AttributeInfo> attributes;
 };
 
 } // namespace XJVM

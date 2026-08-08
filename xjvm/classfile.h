@@ -87,6 +87,25 @@ class ClassFile
 	}
 
 	/// <summary>
+	/// Get the offset of the string for a constant
+	/// </summary>
+	/// <param name="constant">The constant to read from</param>
+	/// <param name="getDescriptor>Get the descriptor instead of the name of a reference</param>
+	/// <returns>The string pointed to, or nothing if not a string constant</returns>
+	ConstOffsetStringView GetStringOffset(const ConstantInfo& constant, bool getDescriptor = false) const;
+
+	/// <summary>
+	/// Get the offset of a string for a constant
+	/// </summary>
+	/// <param name="constant">The index of the constant to read from</param>
+	/// <param name="getDescriptor>Get the descriptor instead of the name of a reference</param>
+	/// <returns>The string pointed to, or nothing if not a string constant</returns>
+	ConstOffsetStringView GetStringOffset(u2 index, bool getDescriptor = false) const
+	{
+		return GetStringOffset(GetConstant(index), getDescriptor);
+	}
+
+	/// <summary>
 	/// Get a string for a constant
 	/// </summary>
 	/// <param name="constant">The constant to read from</param>
@@ -236,14 +255,17 @@ class ClassFile
 	/// </summary>
 	/// <param name="data">Class file data</param>
 	/// <param name="offset">The current offset into the class</param>
-	void ParseMember(std::span<const u1> data, u4& offset);
+	/// <param name="info">The member to store the data in</param>
+	/// <param name="type">The type of member this is</param>
+	void ParseMember(std::span<const u1> data, u4& offset, MemberInfo& info, MemberType type);
 
 	/// <summary>
 	/// Parse an attribute
 	/// </summary>
 	/// <param name="data">Class file data</param>
 	/// <param name="offset">The current offset into the class</param>
-	void ParseAttribute(std::span<const u1> data, u4& offset);
+	/// <returns>The subset of m_attributes where the attributes are</returns>
+	OffsetSpan<const AttributeInfo> ParseAttributes(std::span<const u1> data, u4& offset);
 };
 
 } // namespace XJVM

@@ -16,6 +16,7 @@
     <ClInclude Include="field_descriptor.h" />
     <ClInclude Include="endian.h" />
     <ClInclude Include="jvmdef.h" />
+    <ClInclude Include="offspan.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="xjvm.h" />
   </ItemGroup>
