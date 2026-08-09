@@ -37,5 +37,11 @@ int main(int argc, char* argv[])
 		std::println("constant {} has type {} and string \"{}\"", i, (XJVM::u1)constant.tag, test.GetString(constant));
 	}
 
+	for (size_t i = 0; i < test.GetInterfaceCount(); i++)
+	{
+		std::println("interface {} is {}", i, test.GetInterface(i));
+	}
+
 	return ERROR_SUCCESS;
 }
+ 
