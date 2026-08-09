@@ -151,6 +151,30 @@ class ClassFile
 		return GetConstant(m_superClass);
 	}
 
+	/// <summary>
+	/// Get the name of the given interface
+	/// </summary>
+	/// <param name="index">The index in the interface array to get</param>
+	/// <returns>The string pointed to by that interface, if any</returns>
+	const std::string_view GetInterface(size_t index) const
+	{
+		if (index < m_interfaces.size())
+		{
+			return GetString(m_interfaces[index]);
+		}
+
+		return {};
+	}
+
+	/// <summary>
+	/// Get the number of interfaces this class implements
+	/// </summary>
+	/// <returns>The number of interfaces</returns>
+	size_t GetInterfaceCount() const
+	{
+		return m_interfaces.size();
+	}
+
   private:
 	static constexpr u4 MAGIC = 0xCAFEBABE;
 	static constexpr u2 MAJOR_VERSION = 50; // Java SE 6

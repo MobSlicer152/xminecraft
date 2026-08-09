@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <cassert>
@@ -14,6 +15,7 @@
 #include <limits>
 #include <span>
 #include <string_view>
+#include <utility>
 
 namespace XJVM
 {

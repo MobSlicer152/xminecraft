@@ -57,6 +57,7 @@ void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset)
 
 void ClassFile::ReadBytes(std::span<const u1> data, size_t& offset, std::span<u1> dest)
 {
+	XJVM_ASSERT((offset + dest.size()) < data.size(), "tried to read past end of class file data");
 	memcpy(dest.data(), &data[offset], dest.size());
 	offset += dest.size();
 }
@@ -65,9 +66,12 @@ u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 length)
 {
 	XJVM_ASSERT((offset + length) < data.size(), "tried to read past end of class file data");
 	auto strOffset = m_stringData.size();
-	m_stringData.resize(m_stringData.size() + length);
-	memcpy(&m_stringData[strOffset], &data[offset], length);
-	offset += length;
+	if (length > 0)
+	{
+		m_stringData.resize(m_stringData.size() + length);
+		memcpy(&m_stringData[strOffset], &data[offset], length);
+		offset += length;
+	}
 	return strOffset;
 }
 
@@ -216,6 +220,10 @@ OffsetSpan<const AttributeInfo> XJVM::ClassFile::ParseAttributes(std::span<const
 {
 	// attributes_count
 	auto span = OffsetSpan<AttributeInfo>(m_attributes.size(), ReadNextValue<u2>(data, offset));
+	if (span.Size() == UINT16_MAX)
+	{
+		return OffsetSpan<AttributeInfo>(m_attributes.size(), 0);
+	}
 	m_attributes.resize(m_attributes.size() + span.Size());
 
 	for (auto& attrib : span.View(m_attributes.data()))
@@ -231,8 +239,6 @@ OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& off
 {
 	// read the attribute length
 	auto length = ReadNextValue<u4>(data, offset);
-	// used to skip to end of the attribute data
-	auto end = offset + length;
 	// output span that gets returned
 	OffsetSpan<u1> result;
 
@@ -269,8 +275,7 @@ OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& off
 		ReadBytes(data, offset, codeView);
 		code.code = codeSpan;
 
-		// read attributes and number of exceptions
-		code.attributes = ParseAttributes(data, offset);
+		// read number of exceptions
 		code.exceptionCount = ReadNextValue<u2>(data, offset);
 
 		// now that the size is known, extend the data and copy the struct in
@@ -286,6 +291,9 @@ OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& off
 			exceptions[i].handlerPc = ReadNextValue<u2>(data, offset);
 			exceptions[i].catchType = ReadNextValue<u2>(data, offset);
 		}
+
+		// read attributes
+		code.attributes = ParseAttributes(data, offset);
 
 		break;
 	}
@@ -303,22 +311,21 @@ OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& off
 
 		break;
 	}
+	default: {
+		Message("unknown attribute %.*s\n", name.size(), name.data());
+		[[fallthrough]];
+	}
 	case AttributeType::Synthetic:
 	case AttributeType::SourceFile:
 	case AttributeType::LineNumberTable:
 	case AttributeType::LocalVariableTable:
 	case AttributeType::Deprecated: {
-		break;
-	}
-	default: {
-		Message("unknown attribute %.*s\n", name.size(), name.data());
+		// skip the data
+		offset += length;
 		break;
 	}
 	}
 
-	// make sure no unused stuff is left over
-	XJVM_ASSERT(offset <= end, "ParseAttribute read past expected size");
-	offset = end;
 	return result;
 }
 
