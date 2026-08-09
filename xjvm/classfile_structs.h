@@ -225,8 +225,9 @@ struct SyntheticAttribute
 
 enum class MemberType
 {
-	Field = 0,
-	Method = 1
+	Unknown = 0,
+	Field = 1,
+	Method = 2
 };
 
 /// <summary>

@@ -118,9 +118,24 @@ ConstOffsetStringView ClassFile::GetStringOffset(const ConstantInfo& constant, b
 	return {};
 }
 
+ConstOffsetStringView ClassFile::GetStringOffset(u2 index, bool getDescriptor /*= false*/) const
+{
+	return GetStringOffset(GetConstant(index), getDescriptor);
+}
+
 const std::string_view ClassFile::GetString(const ConstantInfo& constant, bool getDescriptor) const
 {
 	return GetStringOffset(constant, getDescriptor).StringView((const void*)m_stringData.data());
+}
+
+const std::string_view ClassFile::GetString(ConstOffsetStringView view) const
+{
+	return view.StringView(m_stringData.data());
+}
+
+const std::string_view ClassFile::GetString(u2 index, bool getDescriptor /*= false*/) const
+{
+	return GetString(GetConstant(index), getDescriptor);
 }
 
 void ClassFile::ParseConstant(std::span<const u1> data, u4& offset, u2& index)
@@ -190,7 +205,7 @@ void ClassFile::ParseInterfaces(std::span<const u1> data, u4& offset)
 	}
 }
 
-void XJVM::ClassFile::ParseMembers(std::span<const u1> data, u4& offset)
+void ClassFile::ParseMembers(std::span<const u1> data, u4& offset)
 {
 	// read fields
 	m_fields.resize(ReadNextValue<u2>(data, offset));
@@ -207,7 +222,7 @@ void XJVM::ClassFile::ParseMembers(std::span<const u1> data, u4& offset)
 	}
 }
 
-void XJVM::ClassFile::ParseMember(std::span<const u1> data, u4& offset, MemberInfo& info, MemberType type)
+void ClassFile::ParseMember(std::span<const u1> data, u4& offset, MemberInfo& info, MemberType type)
 {
 	info.type = type;
 	info.accessFlags = (MemberAccessFlags)ReadNextValue<u2>(data, offset);
@@ -216,7 +231,7 @@ void XJVM::ClassFile::ParseMember(std::span<const u1> data, u4& offset, MemberIn
 	info.attributes = ParseAttributes(data, offset);
 }
 
-OffsetSpan<const AttributeInfo> XJVM::ClassFile::ParseAttributes(std::span<const u1> data, u4& offset)
+OffsetSpan<const AttributeInfo> ClassFile::ParseAttributes(std::span<const u1> data, u4& offset)
 {
 	// attributes_count
 	auto span = OffsetSpan<AttributeInfo>(m_attributes.size(), ReadNextValue<u2>(data, offset));
@@ -352,4 +367,173 @@ ClassFile::ClassFile(const char* fileName)
 ClassFile::ClassFile(std::span<const u1> classData)
 {
 	Parse(classData);
+}
+
+ClassFile::MemberView::MemberView(const MemberInfo& info, const std::vector<u1>& stringData,
+								  const std::vector<AttributeInfo>& attributes, const std::vector<u1>& attributeData)
+	: m_type(info.type), m_accessFlags(info.accessFlags), m_name(info.name.StringView(stringData.data())),
+	  m_descriptor(info.descriptor.StringView(stringData.data()))
+{
+	auto attributeView = info.attributes.View(attributes.data());
+	m_attributes.resize(attributeView.size());
+	for (size_t i = 0; i < m_attributes.size(); i++)
+	{
+		m_attributes[i] = AttributeView(attributeView[i], stringData, attributeData);
+	}
+}
+
+const std::string_view ClassFile::MemberView::GetName() const
+{
+	return m_name;
+}
+
+MemberAccessFlags ClassFile::MemberView::GetAccessFlags() const
+{
+	return m_accessFlags;
+}
+
+MemberType ClassFile::MemberView::GetType() const
+{
+	return m_type;
+}
+
+const std::string_view ClassFile::MemberView::GetDescriptor() const
+{
+	return m_descriptor;
+}
+
+std::span<const ClassFile::AttributeView> ClassFile::MemberView::GetAttributes() const
+{
+	return m_attributes;
+}
+
+const std::string_view ClassFile::AttributeView::GetName() const
+{
+	return m_name;
+}
+
+uint64_t ClassFile::AttributeView::GetNameHash() const
+{
+	return m_nameHash;
+}
+
+AttributeType ClassFile::AttributeView::GetType() const
+{
+	return (AttributeType)m_nameHash;
+}
+
+ClassFile::AttributeView::AttributeView(const AttributeInfo& info, const std::vector<u1>& stringData,
+										const std::vector<u1>& attributeData)
+	: m_name(info.name.StringView(stringData.data())), m_nameHash(FNV(m_name)),
+	  m_info(info.info.View(attributeData.data()).data())
+{
+}
+
+size_t ClassFile::GetAttributeCount() const
+{
+	return m_attributes.size();
+}
+
+void ClassFile::GetAttribute(AttributeInfo& info, AttributeView& attribute) const
+{
+	attribute = AttributeView(info, m_stringData, m_attributeData);
+}
+
+void ClassFile::GetAttribute(size_t index, AttributeView& attribute) const
+{
+	if (index < m_attributes.size())
+	{
+		attribute = AttributeView(m_attributes[index], m_stringData, m_attributeData);
+	}
+}
+
+size_t ClassFile::GetMethodCount() const
+{
+	return m_methods.size();
+}
+
+void ClassFile::GetMethod(size_t index, MemberView& member) const
+{
+	if (index < m_fields.size())
+	{
+		member = MemberView(m_methods[index], m_stringData, m_attributes, m_attributeData);
+	}
+}
+
+size_t ClassFile::GetFieldCount() const
+{
+	return m_fields.size();
+}
+
+void ClassFile::GetField(size_t index, MemberView& member) const
+{
+	if (index < m_fields.size())
+	{
+		member = MemberView(m_fields[index], m_stringData, m_attributes, m_attributeData);
+	}
+}
+
+size_t ClassFile::GetInterfaceCount() const
+{
+	return m_interfaces.size();
+}
+
+const std::string_view ClassFile::GetInterface(size_t index) const
+{
+	if (index < m_interfaces.size())
+	{
+		return GetString(m_interfaces[index]);
+	}
+
+	return {};
+}
+
+const ConstantInfo& ClassFile::GetSuperClass() const
+{
+	return GetConstant(m_superClass);
+}
+
+const ConstantInfo& ClassFile::GetThisClass() const
+{
+	return GetConstant(m_thisClass);
+}
+
+ClassAccessFlags ClassFile::GetAccessFlags() const
+{
+	return m_accessFlags;
+}
+
+u2 ClassFile::GetConstantPoolSize() const
+{
+	return m_constantPoolSize;
+}
+
+const ConstantInfo& ClassFile::GetConstant(u2 index) const
+{
+	if (m_constantPool.contains(index))
+	{
+		return m_constantPool.at(index);
+	}
+
+	return CONSTANT_PAD_ENTRY;
+}
+
+u2 ClassFile::GetMinorVersion() const
+{
+	return m_minorVersion;
+}
+
+u2 ClassFile::GetMajorVersion() const
+{
+	return m_majorVersion;
+}
+
+bool ClassFile::IsValid() const
+{
+	return m_valid;
+}
+
+std::span<const u1> ClassFile::GetCode(CodeAttribute& codeAttrib) const
+{
+	return codeAttrib.code.View(m_code.data());
 }
