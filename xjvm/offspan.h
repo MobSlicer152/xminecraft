@@ -15,9 +15,6 @@ namespace XJVM
 /// <typeparam name="T">Element type</typeparam>
 template <class T> class OffsetSpan
 {
-	size_t m_offset;
-	size_t m_count;
-
   public:
 	/// <summary>
 	/// Create a new offset span
@@ -46,7 +43,8 @@ template <class T> class OffsetSpan
 	constexpr const std::string_view StringView(const void* base) const
 		requires(std::is_same_v<std::remove_const_t<T>, char>)
 	{
-		return RawView(base);
+		auto span = RawView(base);
+		return std::string_view(span.data(), span.size());
 	}
 
 	/// <summary>
@@ -54,7 +52,7 @@ template <class T> class OffsetSpan
 	/// </summary>
 	/// <param name="base">The base of the data</param>
 	/// <returns>A span</returns>
-	constexpr std::span<T> View(void* base) const
+	constexpr std::span<T> View(void* base)
 	{
 		return RawView(base);
 	}
@@ -64,10 +62,11 @@ template <class T> class OffsetSpan
 	/// </summary>
 	/// <param name="base">The base of the container</param>
 	/// <returns>A string view</returns>
-	constexpr std::string_view StringView(void* base) const
+	constexpr std::string_view StringView(void* base)
 		requires(std::is_same_v<T, char>)
 	{
-		return const_cast<auto>(RawView(base));
+		auto span = RawView(base);
+		return std::string_view(span.data(), span.size());
 	}
 
 	/// <summary>
@@ -79,7 +78,18 @@ template <class T> class OffsetSpan
 		return m_count;
 	}
 
+	/// <summary>
+	/// Convert to span of const T
+	/// </summary>
+	constexpr operator OffsetSpan<const T>()
+	{
+		return OffsetSpan<const T>(m_offset, m_count);
+	}
+
   private:
+	size_t m_offset;
+	size_t m_count;
+
 	// evil because it takes the const off, but it gets added back in the const
 	// versions, and base isn't const otherwise so it's okay
 	constexpr std::span<T> RawView(const void* base) const
