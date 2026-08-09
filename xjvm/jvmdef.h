@@ -4,12 +4,14 @@
 
 #pragma once
 
+#include <array>
 #include <bit>
 #include <cassert>
 #include <concepts>
 #include <cstdint>
 #include <limits>
 #include <span>
+#include <string_view>
 
 namespace XJVM
 {
