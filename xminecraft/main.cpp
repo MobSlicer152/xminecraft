@@ -215,6 +215,14 @@ void operator delete[](void* ptr, size_t)
 //-----------------------------------------------------------------------------
 void __cdecl main()
 {
+	XJVM::g_msgCallback = (XJVM::MessageCallback)puts;
+
+	XJVM::ClassFile test("Test.class");
+	if (!test.IsValid())
+	{
+		return;
+	}
+
     // Initialize Direct3D
     if (FAILED(InitD3D()))
         return;
