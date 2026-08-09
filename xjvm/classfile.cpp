@@ -37,6 +37,12 @@ void ClassFile::Parse(std::span<const u1> data)
 
 	// read interfaces
 	ParseInterfaces(data, offset);
+
+	// read fields and methods
+	ParseMembers(data, offset);
+
+	// read class attributes
+	ParseAttributes(data, offset);
 }
 
 void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset)
@@ -47,6 +53,12 @@ void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset)
 	{
 		ParseConstant(data, offset, i);
 	}
+}
+
+void ClassFile::ReadBytes(std::span<const u1> data, size_t& offset, std::span<u1> dest)
+{
+	memcpy(dest.data(), &data[offset], dest.size());
+	offset += dest.size();
 }
 
 u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 length)
@@ -195,7 +207,7 @@ void XJVM::ClassFile::ParseMember(std::span<const u1> data, u4& offset, MemberIn
 {
 	info.type = type;
 	info.accessFlags = (MemberAccessFlags)ReadNextValue<u2>(data, offset);
-	info.name = GetStringOffset(ReadNextValue<u2>(data, offset)); // read the name index and get it
+	info.name = GetStringOffset(ReadNextValue<u2>(data, offset));		// read the name index and get it
 	info.descriptor = GetStringOffset(ReadNextValue<u2>(data, offset)); // read the descriptor index and get it
 	info.attributes = ParseAttributes(data, offset);
 }
@@ -209,8 +221,94 @@ OffsetSpan<const AttributeInfo> XJVM::ClassFile::ParseAttributes(std::span<const
 	for (auto& attrib : span.View(m_attributes.data()))
 	{
 		attrib.name = GetStringOffset(ReadNextValue<u2>(data, offset));
-		attrib.info = ParseAttributeInfo(data, offset);
+		attrib.info = ParseAttribute(data, offset, attrib.name.StringView(m_stringData.data()));
 	}
+
+	return span;
+}
+
+OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& offset, const std::string_view name)
+{
+	// read the attribute length
+	auto length = ReadNextValue<u4>(data, offset);
+	// used to skip to end of the attribute data
+	auto end = offset + length;
+	// output span that gets returned
+	OffsetSpan<u1> result;
+
+	// handles extending the attribute data buffer and setting up the result span
+	auto extendData = [&](size_t size) {
+		result = OffsetSpan<u1>(m_attributeData.size(), size);
+		m_attributeData.resize(m_attributeData.size() + size);
+		return result.View(m_attributeData.data());
+	};
+
+	// parse stuff
+	switch ((AttributeType)FNV(name))
+	{
+	case AttributeType::ConstantValue: {
+		auto view = extendData(sizeof(ConstantValueAttribute));
+		auto& constant = *(ConstantValueAttribute*)view.data();
+		constant.constantValueIndex = ReadNextValue<u2>(data, offset);
+		break;
+	}
+	case AttributeType::Code: {
+		// get basic stuff into the struct
+		CodeAttribute code = {};
+		code.maxStack = ReadNextValue<u2>(data, offset);
+		code.maxLocals = ReadNextValue<u2>(data, offset);
+
+		// read the size of the code and extend the code buffer for it
+		auto codeLength = ReadNextValue<u4>(data, offset);
+		auto codeOffset = m_code.size();
+		m_code.resize(m_code.size() + codeLength);
+
+		// read the code
+		auto codeSpan = OffsetSpan<u1>(codeOffset, codeLength);
+		auto codeView = codeSpan.View(m_code.data());
+		ReadBytes(data, offset, codeView);
+		code.code = codeSpan;
+
+		// read attributes and number of exceptions
+		code.attributes = ParseAttributes(data, offset);
+		code.exceptionCount = ReadNextValue<u2>(data, offset);
+
+		// now that the size is known, extend the data and copy the struct in
+		auto view = extendData(sizeof(CodeAttribute) + code.exceptionCount * sizeof(CodeExceptionData));
+		memcpy(view.data(), &code, sizeof(CodeAttribute));
+
+		// read the exceptions
+		auto& exceptions = ((CodeAttribute*)view.data())->exceptions;
+		for (u2 i = 0; i < code.exceptionCount; i++)
+		{
+			exceptions[i].startPc = ReadNextValue<u2>(data, offset);
+			exceptions[i].endPc = ReadNextValue<u2>(data, offset);
+			exceptions[i].handlerPc = ReadNextValue<u2>(data, offset);
+			exceptions[i].catchType = ReadNextValue<u2>(data, offset);
+		}
+
+		break;
+	}
+	case AttributeType::Exceptions: {
+		// read the number of exceptions
+		auto count = ReadNextValue<u2>(data, offset);
+
+		// extend the attribute data
+		auto view = extendData(sizeof(ExceptionsAttribute) + count * sizeof(u2));
+
+		// read the array of exceptions
+		auto& exceptions = *(ExceptionsAttribute*)view.data();
+		exceptions.exceptionCount = count;
+		ReadArray(data, offset, std::span(exceptions.exceptionIndexTable, exceptions.exceptionCount));
+
+		break;
+	}
+	}
+
+	// make sure no unused stuff is left over
+	assert(offset <= end, "ParseAttribute read past expected size");
+	offset = end;
+	return result;
 }
 
 ClassFile::ClassFile(const char* fileName)

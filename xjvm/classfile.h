@@ -175,8 +175,11 @@ class ClassFile
 	// all UTF-8 constants pooled together
 	std::vector<u1> m_stringData;
 
-	// attribute data (contains both info field and any nested variably sized arrays)
+	// attribute data
 	std::vector<u1> m_attributeData;
+
+	// code (if present)
+	std::vector<u1> m_code;
 
 	/// <summary>
 	/// Read the value at the offset
@@ -204,6 +207,20 @@ class ClassFile
 		auto value = ReadValueAt<T>(data, offset);
 		offset += sizeof(T);
 		return value;
+	}
+
+	/// <summary>
+	/// Read the bytes at the offset and advance by the size
+	/// </summary>
+	/// <param name="data">Class file data</param>
+	/// <param name="offset">Current offset into the class</param>
+	/// <param name="dest">Where to copy the bytes to</param>
+	void ReadBytes(std::span<const u1> data, size_t& offset, std::span<u1> dest);
+
+	template <typename T>
+	void ReadArray(std::span<const u1> data, size_t& offset, std::span<T> dest)
+	{
+		ReadBytes(data, offset, std::span<u1>((u1*)dest.data(), dest.size_bytes()));
 	}
 
 	/// <summary>
@@ -266,6 +283,15 @@ class ClassFile
 	/// <param name="offset">The current offset into the class</param>
 	/// <returns>The subset of m_attributes where the attributes are</returns>
 	OffsetSpan<const AttributeInfo> ParseAttributes(std::span<const u1> data, u4& offset);
+
+	/// <summary>
+	/// Parse a field or method
+	/// </summary>
+	/// <param name="data">Class file data</param>
+	/// <param name="offset">The current offset into the class</param>
+	/// <param name="info">The member to store the data in</param>
+	/// <param name="type">The type of member this is</param>
+	OffsetSpan<const u1> ParseAttribute(std::span<const u1> data, u4& offset, const std::string_view name);
 };
 
 } // namespace XJVM

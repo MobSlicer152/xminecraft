@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "hash.h"
 #include "jvmdef.h"
 #include "offspan.h"
 
@@ -133,6 +134,17 @@ enum class MemberAccessFlags : u2
 	STRICT = 0x0400,
 };
 
+enum class AttributeType : uint64_t
+{
+#define XJVM_MAKE_ATTRIBUTE(x) x = FNV(#x)
+	XJVM_MAKE_ATTRIBUTE(ConstantValue),
+	XJVM_MAKE_ATTRIBUTE(Code),
+	XJVM_MAKE_ATTRIBUTE(Exceptions),
+	XJVM_MAKE_ATTRIBUTE(InnerClasses),
+	XJVM_MAKE_ATTRIBUTE(Synthetic),
+#undef XJVM_MAKE_ATTRIBUTE
+};
+
 /// <summary>
 /// 4.7 Attributes
 /// </summary>
@@ -168,8 +180,7 @@ struct CodeAttribute
 {
 	u2 maxStack;
 	u2 maxLocals;
-	u4 codeLength;
-	u4 codeOffset;
+	OffsetSpan<const u1> code;
 	OffsetSpan<const AttributeInfo> attributes;
 	u2 exceptionCount;
 	CodeExceptionData exceptions[0];
