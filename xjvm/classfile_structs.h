@@ -142,6 +142,10 @@ enum class AttributeType : uint64_t
 	XJVM_MAKE_ATTRIBUTE(Exceptions),
 	XJVM_MAKE_ATTRIBUTE(InnerClasses),
 	XJVM_MAKE_ATTRIBUTE(Synthetic),
+	XJVM_MAKE_ATTRIBUTE(SourceFile),
+	XJVM_MAKE_ATTRIBUTE(LineNumberTable),
+	XJVM_MAKE_ATTRIBUTE(LocalVariableTable),
+	XJVM_MAKE_ATTRIBUTE(Deprecated),
 #undef XJVM_MAKE_ATTRIBUTE
 };
 

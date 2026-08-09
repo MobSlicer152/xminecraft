@@ -162,7 +162,7 @@ class ClassFile
 	u4 m_magic = MAGIC;
 	u2 m_minorVersion = 0;
 	u2 m_majorVersion = MAJOR_VERSION;
-	u2 m_constantPoolSize;
+	u2 m_constantPoolSize = 0;
 	std::map<u2, ConstantInfo> m_constantPool;
 	ClassAccessFlags m_accessFlags = ClassAccessFlags::UNKNOWN;
 	u2 m_thisClass = 0;
@@ -190,7 +190,7 @@ class ClassFile
 	/// <returns>The value read</returns>
 	template <std::integral T> T ReadValueAt(std::span<const u1> data, size_t offset)
 	{
-		assert((offset + sizeof(T)) < data.size(), "tried to read past end of class file data");
+		XJVM_ASSERT((offset + sizeof(T)) < data.size(), "tried to read past end of class file data");
 		return SwapEndian(*(const T*)(data.data() + offset));
 	}
 

@@ -12,7 +12,7 @@ void ClassFile::Parse(std::span<const u1> data)
 	m_magic = ReadNextValue<u4>(data, offset);
 	if (m_magic != MAGIC)
 	{
-		printf("class has incorrect magic 0x%08X\n", m_magic);
+		Message("class has incorrect magic 0x%08X\n", m_magic);
 		m_valid = false;
 		return;
 	}
@@ -22,7 +22,7 @@ void ClassFile::Parse(std::span<const u1> data)
 	m_majorVersion = ReadNextValue<u2>(data, offset);
 	if (m_majorVersion != MAJOR_VERSION)
 	{
-		printf("class version %hu.%hu does not match supported version %hu\n", m_majorVersion, m_minorVersion, MAJOR_VERSION);
+		Message("class version %hu.%hu does not match supported version %hu\n", m_majorVersion, m_minorVersion, MAJOR_VERSION);
 		m_valid = false;
 		return;
 	}
@@ -63,7 +63,7 @@ void ClassFile::ReadBytes(std::span<const u1> data, size_t& offset, std::span<u1
 
 u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 length)
 {
-	assert((offset + length) < data.size(), "tried to read past end of class file data");
+	XJVM_ASSERT((offset + length) < data.size(), "tried to read past end of class file data");
 	auto strOffset = m_stringData.size();
 	m_stringData.resize(m_stringData.size() + length);
 	memcpy(&m_stringData[strOffset], &data[offset], length);
@@ -167,7 +167,7 @@ void ClassFile::ParseConstant(std::span<const u1> data, u4& offset, u2& index)
 		break;
 	}
 	default: {
-		printf("constant %u has unknown tag %u\n", index, info.tag);
+		Message("constant %u has unknown tag %u\n", index, info.tag);
 		break;
 	}
 	}
@@ -303,10 +303,21 @@ OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& off
 
 		break;
 	}
+	case AttributeType::Synthetic:
+	case AttributeType::SourceFile:
+	case AttributeType::LineNumberTable:
+	case AttributeType::LocalVariableTable:
+	case AttributeType::Deprecated: {
+		break;
+	}
+	default: {
+		Message("unknown attribute %.*s\n", name.size(), name.data());
+		break;
+	}
 	}
 
 	// make sure no unused stuff is left over
-	assert(offset <= end, "ParseAttribute read past expected size");
+	XJVM_ASSERT(offset <= end, "ParseAttribute read past expected size");
 	offset = end;
 	return result;
 }
@@ -316,7 +327,7 @@ ClassFile::ClassFile(const char* fileName)
 	auto f = fopen(fileName, "rb");
 	if (!f)
 	{
-		printf("failed to open class file %s\n", fileName);
+		Message("failed to open class file %s\n", fileName);
 		return;
 	}
 

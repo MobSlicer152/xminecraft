@@ -1,7 +1,14 @@
 #define NO_STRICT
+#define _NO_CRT_STDIO_INLINE
+
 #include <print>
 #include <windows.h>
 #include "../xjvm/xjvm.h"
+
+extern "C" int _vsnprintf(_Out_writes_opt_(_BufferCount) _Post_maybez_ char* const _Buffer, _In_ size_t const _BufferCount, _In_z_ _Printf_format_string_ char const* const _Format, va_list _ArgList)
+{
+	return _vsnprintf_s_l(_Buffer, _BufferCount, _BufferCount, _Format, nullptr, _ArgList);
+}
 
 int main(int argc, char* argv[])
 {
@@ -10,6 +17,8 @@ int main(int argc, char* argv[])
 		std::println("usage: {} <classfile>", argv[0]);
 		return ERROR_INVALID_PARAMETER;
 	}
+
+	XJVM::g_msgCallback = (XJVM::MessageCallback)puts;
 
 	XJVM::ClassFile test(argv[1]);
 	if (!test.IsValid())
