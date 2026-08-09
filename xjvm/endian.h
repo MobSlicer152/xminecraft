@@ -16,25 +16,9 @@ namespace XJVM
 /// <param name="x">The value to reverse</param>
 /// <returns>The value with its bytes reversed</returns>
 template <std::integral T> static constexpr T Byteswap(T x)
+	requires(sizeof(T) <= 8)
 {
-	constexpr auto size = sizeof(T);
-	static_assert(size <= 8, "T is not byteswappable");
-	if constexpr (size == 1)
-	{
-		return x;
-	}
-	else if constexpr (size == 2)
-	{
-		return std::_Byteswap_ushort(x);
-	}
-	else if constexpr (size == 4)
-	{
-		return std::_Byteswap_ulong(x);
-	}
-	else if constexpr (size == 8)
-	{
-		return std::_Byteswap_uint64(x);
-	}
+	return std::byteswap(x);
 }
 
 /// <summary>
@@ -49,10 +33,8 @@ template <std::integral T> static constexpr T SwapEndian(T x)
 	{
 		return x;
 	}
-	else
-	{
-		return Byteswap(x);
-	}
+
+	return Byteswap(x);
 }
 
 } // namespace XJVM
