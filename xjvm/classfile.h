@@ -247,6 +247,12 @@ class ClassFile
 	size_t GetFieldCount() const;
 
 	/// <summary>
+	/// Get a new vector of views of all the fields
+	/// </summary>
+	/// <returns>A vector of views of all the fields</returns>
+	std::vector<MemberView> GetFields() const;
+
+	/// <summary>
 	/// Get a method in the class
 	/// </summary>
 	/// <param name="index">The index of the method</param>
@@ -258,6 +264,12 @@ class ClassFile
 	/// </summary>
 	/// <returns>The number of methods</returns>
 	size_t GetMethodCount() const;
+
+	/// <summary>
+	/// Get a new vector of views of all the methods
+	/// </summary>
+	/// <returns>A vector of views of all the methods</returns>
+	std::vector<MemberView> GetMethods() const;
 
 	/// <summary>
 	/// Get an attribute
@@ -278,6 +290,12 @@ class ClassFile
 	/// </summary>
 	/// <returns>The number of attributes</returns>
 	size_t GetAttributeCount() const;
+
+	/// <summary>
+	/// Get a new vector of views of all the attributes
+	/// </summary>
+	/// <returns>The vector of attributes</returns>
+	std::vector<AttributeView> GetAttributes() const;
 
 	/// <summary>
 	/// Get code from a code attribute

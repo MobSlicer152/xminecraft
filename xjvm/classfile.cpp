@@ -12,7 +12,7 @@ void ClassFile::Parse(std::span<const u1> data)
 	m_magic = ReadNextValue<u4>(data, offset);
 	if (m_magic != MAGIC)
 	{
-		Message("class has incorrect magic 0x%08X\n", m_magic);
+		Message("class has incorrect magic 0x%08X", m_magic);
 		m_valid = false;
 		return;
 	}
@@ -22,7 +22,7 @@ void ClassFile::Parse(std::span<const u1> data)
 	m_majorVersion = ReadNextValue<u2>(data, offset);
 	if (m_majorVersion != MAJOR_VERSION)
 	{
-		Message("class version %hu.%hu does not match supported version %hu\n", m_majorVersion, m_minorVersion, MAJOR_VERSION);
+		Message("class version %hu.%hu does not match supported version %hu", m_majorVersion, m_minorVersion, MAJOR_VERSION);
 		m_valid = false;
 		return;
 	}
@@ -57,14 +57,14 @@ void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset)
 
 void ClassFile::ReadBytes(std::span<const u1> data, size_t& offset, std::span<u1> dest)
 {
-	XJVM_ASSERT((offset + dest.size()) < data.size(), "tried to read past end of class file data");
+	XJVM_ASSERT(dest.size() < data.size() - offset, "tried to read past end of class file data");
 	memcpy(dest.data(), &data[offset], dest.size());
 	offset += dest.size();
 }
 
 u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 length)
 {
-	XJVM_ASSERT((offset + length) < data.size(), "tried to read past end of class file data");
+	XJVM_ASSERT(length < data.size() - offset, "tried to read past end of class file data");
 	auto strOffset = m_stringData.size();
 	if (length > 0)
 	{
@@ -186,8 +186,9 @@ void ClassFile::ParseConstant(std::span<const u1> data, u4& offset, u2& index)
 		break;
 	}
 	default: {
-		Message("constant %u has unknown tag %u\n", index, info.tag);
-		break;
+		Message("constant %u has unknown tag %u", index, info.tag);
+		index++;
+		return;
 	}
 	}
 
@@ -235,16 +236,23 @@ OffsetSpan<const AttributeInfo> ClassFile::ParseAttributes(std::span<const u1> d
 {
 	// attributes_count
 	auto span = OffsetSpan<AttributeInfo>(m_attributes.size(), ReadNextValue<u2>(data, offset));
-	if (span.Size() == UINT16_MAX)
+	if (span.Size() == 0)
 	{
-		return OffsetSpan<AttributeInfo>(m_attributes.size(), 0);
+		return OffsetSpan<AttributeInfo>(span.Offset(), 0);
 	}
+
 	m_attributes.resize(m_attributes.size() + span.Size());
 
-	for (auto& attrib : span.View(m_attributes.data()))
+	for (size_t i = 0; i < span.Size(); i++)
 	{
-		attrib.name = GetStringOffset(ReadNextValue<u2>(data, offset));
-		attrib.info = ParseAttribute(data, offset, attrib.name.StringView(m_stringData.data()));
+		// get these first
+		auto name = GetStringOffset(ReadNextValue<u2>(data, offset));
+		auto info = ParseAttribute(data, offset, name.StringView(m_stringData.data()));
+
+		// get the span now in case ParseAttribute changed it
+		auto& attrib = span.View(m_attributes.data())[i];
+		attrib.name = name;
+		attrib.info = info;
 	}
 
 	return span;
@@ -327,13 +335,14 @@ OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& off
 		break;
 	}
 	default: {
-		Message("unknown attribute %.*s\n", name.size(), name.data());
+		Message("unknown attribute %.*s", name.size(), name.data());
 		[[fallthrough]];
 	}
 	case AttributeType::Synthetic:
 	case AttributeType::SourceFile:
 	case AttributeType::LineNumberTable:
 	case AttributeType::LocalVariableTable:
+	case AttributeType::StackMapTable:
 	case AttributeType::Deprecated: {
 		// skip the data
 		offset += length;
@@ -346,21 +355,25 @@ OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& off
 
 ClassFile::ClassFile(const char* fileName)
 {
+	// open the file
 	auto f = fopen(fileName, "rb");
 	if (!f)
 	{
-		Message("failed to open class file %s\n", fileName);
+		Message("failed to open class file %s", fileName);
 		return;
 	}
 
+	// get the size
 	fseek(f, 0, SEEK_END);
 	auto size = ftell(f);
 	fseek(f, 0, SEEK_SET);
 
+	// read the whole thing
 	auto data = std::vector<u1>(size);
 	fread(data.data(), 1, data.size(), f);
 	fclose(f);
 
+	// parse it
 	Parse(data);
 }
 
@@ -454,7 +467,7 @@ size_t ClassFile::GetMethodCount() const
 
 void ClassFile::GetMethod(size_t index, MemberView& member) const
 {
-	if (index < m_fields.size())
+	if (index < m_methods.size())
 	{
 		member = MemberView(m_methods[index], m_stringData, m_attributes, m_attributeData);
 	}
@@ -537,3 +550,18 @@ std::span<const u1> ClassFile::GetCode(CodeAttribute& codeAttrib) const
 {
 	return codeAttrib.code.View(m_code.data());
 }
+
+#define VECTOR_GETTER(T, name)                                \
+	std::vector<ClassFile::T> ClassFile::Get##name##s() const \
+	{                                                         \
+		std::vector<T> vector(Get##name##Count());            \
+		for (size_t i = 0; i < vector.size(); i++)            \
+		{                                                     \
+			Get##name(i, vector[i]);                          \
+		}                                                     \
+		return vector;                                        \
+	}
+
+VECTOR_GETTER(MemberView, Field)
+VECTOR_GETTER(MemberView, Method)
+VECTOR_GETTER(AttributeView, Attribute)
