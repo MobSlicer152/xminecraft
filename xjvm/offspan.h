@@ -70,10 +70,19 @@ template <class T> class OffsetSpan
 	}
 
 	/// <summary>
+	/// Get the offset of the span
+	/// </summary>
+	/// <returns>The offset</returns>
+	constexpr size_t Offset() const
+	{
+		return m_offset;
+	}
+
+	/// <summary>
 	/// Get the size of the span
 	/// </summary>
 	/// <returns>The size of the span</returns>
-	constexpr std::size_t Size() const
+	constexpr size_t Size() const
 	{
 		return m_count;
 	}
@@ -94,8 +103,8 @@ template <class T> class OffsetSpan
 	// versions, and base isn't const otherwise so it's okay
 	constexpr std::span<T> RawView(const void* base) const
 	{
-		auto bytes = (std::byte*)base;
-		return std::span<T>((T*)&bytes[m_offset], m_count);
+		auto buf = (T*)base;
+		return std::span<T>(&buf[m_offset], m_count);
 	}
 };
 
