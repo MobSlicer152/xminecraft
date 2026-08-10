@@ -21,7 +21,7 @@
     <ClInclude Include="jvmdef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="endian.h">
+    <ClInclude Include="util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="classfile_structs.h">

@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "classfile_structs.h"
-#include "endian.h"
 #include "jvmdef.h"
+#include "util.h"
 
 namespace XJVM
 {
@@ -335,34 +335,6 @@ class ClassFile
 	std::vector<u1> m_code;
 
 	/// <summary>
-	/// Read the value at the offset
-	/// </summary>
-	/// <typeparam name="T">The type of value to read</typeparam>
-	/// <param name="data">Class file data</param>
-	/// <param name="offset">Current offset into the class</param>
-	/// <returns>The value read</returns>
-	template <std::integral T> T ReadValueAt(std::span<const u1> data, size_t offset);
-
-	/// <summary>
-	/// Read the value at the offset and advance by its size
-	/// </summary>
-	/// <typeparam name="T">The type of value to read</typeparam>
-	/// <param name="data">Class file data</param>
-	/// <param name="offset">Current offset into the class</param>
-	/// <returns>The value read</returns>
-	template <std::integral T> T ReadNextValue(std::span<const u1> data, size_t& offset);
-
-	/// <summary>
-	/// Read the bytes at the offset and advance by the size
-	/// </summary>
-	/// <param name="data">Class file data</param>
-	/// <param name="offset">Current offset into the class</param>
-	/// <param name="dest">Where to copy the bytes to</param>
-	void ReadBytes(std::span<const u1> data, size_t& offset, std::span<u1> dest);
-
-	template <typename T> void ReadArray(std::span<const u1> data, size_t& offset, std::span<T> dest);
-
-	/// <summary>
 	/// Read a string and add it to the string buffer
 	/// </summary>
 	/// <param name="data">Class file data</param>
@@ -432,23 +404,5 @@ class ClassFile
 	/// <param name="type">The type of member this is</param>
 	OffsetSpan<const u1> ParseAttribute(std::span<const u1> data, u4& offset, const std::string_view name);
 };
-
-template <std::integral T> T XJVM::ClassFile::ReadValueAt(std::span<const u1> data, size_t offset)
-{
-	XJVM_ASSERT((offset + sizeof(T)) < data.size(), "tried to read past end of class file data");
-	return SwapEndian(*(const T*)(data.data() + offset));
-}
-
-template <std::integral T> T XJVM::ClassFile::ReadNextValue(std::span<const u1> data, size_t& offset)
-{
-	auto value = ReadValueAt<T>(data, offset);
-	offset += sizeof(T);
-	return value;
-}
-
-template <typename T> void XJVM::ClassFile::ReadArray(std::span<const u1> data, size_t& offset, std::span<T> dest)
-{
-	ReadBytes(data, offset, std::span<u1>((u1*)dest.data(), dest.size_bytes()));
-}
 
 } // namespace XJVM

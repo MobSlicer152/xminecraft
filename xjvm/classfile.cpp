@@ -55,13 +55,6 @@ void ClassFile::ParseConstantPool(std::span<const u1> data, u4& offset)
 	}
 }
 
-void ClassFile::ReadBytes(std::span<const u1> data, size_t& offset, std::span<u1> dest)
-{
-	XJVM_ASSERT(dest.size() < data.size() - offset, "tried to read past end of class file data");
-	memcpy(dest.data(), &data[offset], dest.size());
-	offset += dest.size();
-}
-
 u4 ClassFile::ReadString(std::span<const u1> data, size_t& offset, u2 length)
 {
 	XJVM_ASSERT(length < data.size() - offset, "tried to read past end of class file data");

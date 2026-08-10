@@ -7,10 +7,10 @@
 
 #include "classfile.h"
 #include "classfile_structs.h"
-#include "endian.h"
 #include "field_descriptor.h"
 #include "hash.h"
 #include "jvmdef.h"
 #include "offspan.h"
+#include "util.h"
 
 #pragma warning(pop)
