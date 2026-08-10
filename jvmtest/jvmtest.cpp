@@ -5,11 +5,6 @@
 #include <windows.h>
 #include "../xjvm/xjvm.h"
 
-extern "C" int _vsnprintf(_Out_writes_opt_(_BufferCount) _Post_maybez_ char* const _Buffer, _In_ size_t const _BufferCount, _In_z_ _Printf_format_string_ char const* const _Format, va_list _ArgList)
-{
-	return _vsnprintf_s_l(_Buffer, _BufferCount, _BufferCount, _Format, nullptr, _ArgList);
-}
-
 int main(int argc, char* argv[])
 {
 	if (argc < 2)
@@ -34,7 +29,7 @@ int main(int argc, char* argv[])
 	for (uint16_t i = 1; i < test.GetConstantPoolSize(); i++)
 	{
 		auto constant = test.GetConstant(i);
-		std::println("constant {} has type {} and string \"{}\"", i, (XJVM::u1)constant.tag, test.GetString(constant));
+		//std::println("constant {} has type {} and string \"{}\"", i, (XJVM::u1)constant.tag, test.GetString(constant));
 	}
 
 	for (size_t i = 0; i < test.GetInterfaceCount(); i++)
@@ -42,6 +37,11 @@ int main(int argc, char* argv[])
 		std::println("interface {} is {}", i, test.GetInterface(i));
 	}
 
+	auto methods = test.GetMethods();
+	for (const auto& method : methods)
+	{
+		std::println("{} -> {}", method.GetName(), method.GetDescriptor());
+	}
+
 	return ERROR_SUCCESS;
 }
- 
