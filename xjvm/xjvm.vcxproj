@@ -18,6 +18,7 @@
     <ClInclude Include="hash.h" />
     <ClInclude Include="jvmdef.h" />
     <ClInclude Include="offspan.h" />
+    <ClInclude Include="opcodes.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="xjvm.h" />
   </ItemGroup>
@@ -30,6 +31,9 @@
       <GenerateXMLDocumentationFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateXMLDocumentationFiles>
     </ClCompile>
     <ClCompile Include="util.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="opcodes.inc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

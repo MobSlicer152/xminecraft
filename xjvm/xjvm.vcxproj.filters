@@ -42,6 +42,9 @@
     <ClInclude Include="hash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="opcodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="classfile.cpp">
@@ -53,5 +56,10 @@
     <ClCompile Include="util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="opcodes.inc">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
