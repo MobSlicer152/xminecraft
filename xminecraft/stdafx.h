@@ -10,7 +10,7 @@
 #define _NO_CRT_STDIO_INLINE
 #define _CRT_SECURE_NO_WARNINGS
 
-// modern MSVC declares these in an STL header, and that conflicts with xjvm
+// modern MSVC declares these in an STL header, and that conflicts with the XTL ones
 #define _InterlockedCompareExchange _InterlockedCompareExchange_XBOX
 #define _InterlockedDecrement		_InterlockedDecrement_XBOX
 #define _InterlockedExchange		_InterlockedExchange_XBOX
@@ -30,5 +30,7 @@
 #undef _InterlockedIncrement
 
 #include "../xjvm/xjvm.h"
+
+extern "C" void NTAPI DbgPrint(const char* message, ...);
 
 // TODO: reference additional headers your program requires here

@@ -23,6 +23,7 @@ extern "C"
 	{
 	}
 
+#ifdef _DEBUG
 	_NODISCARD _Check_return_ unsigned __int64 __cdecl _byteswap_uint64(_In_ unsigned __int64 _Number)
 	{
 		return static_cast<unsigned __int64>(_byteswap_ulong(_Number >> 32) |
@@ -39,6 +40,7 @@ extern "C"
 	{
 		return static_cast<unsigned short>((_Number << 8) | (_Number >> 8));
 	}
+#endif
 
 	void __cdecl __std_exception_copy(_In_ __std_exception_data const* const from, _Inout_ __std_exception_data* const to)
 	{
@@ -73,6 +75,15 @@ extern "C"
 
 		_Data->_DoFree = false;
 		_Data->_What = nullptr;
+	}
+
+	void __cdecl __CxxFrameHandler3()
+	{
+	}
+
+	void __cdecl __std_terminate()
+	{
+		abort();
 	}
 
 	int __cdecl _CrtDbgReportW(_In_ int _ReportType, _In_opt_z_ wchar_t const* _FileName, _In_ int _LineNumber,

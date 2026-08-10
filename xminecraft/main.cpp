@@ -215,7 +215,7 @@ void operator delete[](void* ptr, size_t)
 //-----------------------------------------------------------------------------
 void __cdecl main()
 {
-	XJVM::g_msgCallback = (XJVM::MessageCallback)puts;
+	XJVM::g_msgCallback = [](const char* msg) { DbgPrint("%s\n", msg); };
 
 	XJVM::ClassFile test("Test.class");
 	if (!test.IsValid())
