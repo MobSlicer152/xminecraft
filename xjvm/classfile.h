@@ -199,7 +199,7 @@ class ClassFile
 		/// <summary>
 		/// Get the access flags of this member
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>The access flags</returns>
 		MemberAccessFlags GetAccessFlags() const;
 
 		/// <summary>
