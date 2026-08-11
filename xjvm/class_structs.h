@@ -4,7 +4,7 @@
 
 #include "hash.h"
 #include "jvmdef.h"
-#include "offspan.h"
+#include "OffsetSpan.h"
 
 namespace XJVM
 {

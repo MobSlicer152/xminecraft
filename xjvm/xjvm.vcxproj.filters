@@ -13,9 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="External Files">
+      <UniqueIdentifier>{a05d8192-b0a5-4015-9c67-02d35c7ad9b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classfile.h">
+    <ClInclude Include="ClassFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jvmdef.h">
@@ -24,10 +27,10 @@
     <ClInclude Include="util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="classfile_structs.h">
+    <ClInclude Include="class_structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="field_descriptor.h">
+    <ClInclude Include="FieldDescriptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -36,7 +39,7 @@
     <ClInclude Include="xjvm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="offspan.h">
+    <ClInclude Include="OffsetSpan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hash.h">
@@ -45,9 +48,15 @@
     <ClInclude Include="opcodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\external\miniz\miniz.h">
+      <Filter>External Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JarFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="classfile.cpp">
+    <ClCompile Include="ClassFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -56,10 +65,19 @@
     <ClCompile Include="util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\external\miniz\miniz.c">
+      <Filter>External Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JarFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="opcodes.inc">
       <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\external\miniz\LICENSE">
+      <Filter>External Files</Filter>
     </None>
   </ItemGroup>
 </Project>

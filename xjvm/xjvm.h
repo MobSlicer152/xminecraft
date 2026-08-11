@@ -5,12 +5,12 @@
 #pragma warning(push)
 #pragma warning(disable : 4200, justification : "zero-length arrays are useful")
 
-#include "classfile.h"
-#include "classfile_structs.h"
-#include "field_descriptor.h"
+#include "ClassFile.h"
+#include "class_structs.h"
+#include "FieldDescriptor.h"
 #include "hash.h"
 #include "jvmdef.h"
-#include "offspan.h"
+#include "OffsetSpan.h"
 #include "util.h"
 
 #pragma warning(pop)

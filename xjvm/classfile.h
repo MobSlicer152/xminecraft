@@ -6,7 +6,7 @@
 #include <string_view>
 #include <vector>
 
-#include "classfile_structs.h"
+#include "class_structs.h"
 #include "jvmdef.h"
 #include "util.h"
 

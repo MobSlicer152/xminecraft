@@ -11,19 +11,28 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classfile.h" />
-    <ClInclude Include="classfile_structs.h" />
-    <ClInclude Include="field_descriptor.h" />
+    <ClInclude Include="..\external\miniz\miniz.h" />
+    <ClInclude Include="ClassFile.h" />
+    <ClInclude Include="class_structs.h" />
+    <ClInclude Include="FieldDescriptor.h" />
+    <ClInclude Include="JarFile.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="hash.h" />
     <ClInclude Include="jvmdef.h" />
-    <ClInclude Include="offspan.h" />
+    <ClInclude Include="OffsetSpan.h" />
     <ClInclude Include="opcodes.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="xjvm.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="classfile.cpp" />
+    <ClCompile Include="..\external\miniz\miniz.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <GenerateXMLDocumentationFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateXMLDocumentationFiles>
+      <GenerateXMLDocumentationFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateXMLDocumentationFiles>
+    </ClCompile>
+    <ClCompile Include="ClassFile.cpp" />
+    <ClCompile Include="JarFile.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -33,6 +42,7 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\external\miniz\LICENSE" />
     <None Include="opcodes.inc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
