@@ -217,7 +217,7 @@ void __cdecl main()
 {
 	XJVM::g_msgCallback = [](const char* msg) { DbgPrint("%s\n", msg); };
 
-	XJVM::ClassFile test("Test.class");
+	XJVM::ClassFile test("D:\\Test.class");
 	if (!test.IsValid())
 	{
 		return;
