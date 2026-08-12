@@ -22,6 +22,11 @@ class ClassFile
 {
   public:
 	/// <summary>
+	/// Empty default constructed class
+	/// </summary>
+	ClassFile() = default;
+
+	/// <summary>
 	/// Parse a class file from disk
 	/// </summary>
 	/// <param name="fileName">The path to the class file to parse</param>

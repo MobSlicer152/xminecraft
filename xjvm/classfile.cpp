@@ -2,6 +2,35 @@
 
 using namespace XJVM;
 
+ClassFile::ClassFile(const char* fileName)
+{
+	// open the file
+	auto f = fopen(fileName, "rb");
+	if (!f)
+	{
+		Message("failed to open class file %s", fileName);
+		return;
+	}
+
+	// get the size
+	fseek(f, 0, SEEK_END);
+	auto size = ftell(f);
+	fseek(f, 0, SEEK_SET);
+
+	// read the whole thing
+	auto data = std::vector<u1>(size);
+	fread(data.data(), 1, data.size(), f);
+	fclose(f);
+
+	// parse it
+	Parse(data);
+}
+
+ClassFile::ClassFile(std::span<const u1> classData)
+{
+	Parse(classData);
+}
+
 void ClassFile::Parse(std::span<const u1> data)
 {
 	// the file is valid until proven otherwise
@@ -344,35 +373,6 @@ OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& off
 	}
 
 	return result;
-}
-
-ClassFile::ClassFile(const char* fileName)
-{
-	// open the file
-	auto f = fopen(fileName, "rb");
-	if (!f)
-	{
-		Message("failed to open class file %s", fileName);
-		return;
-	}
-
-	// get the size
-	fseek(f, 0, SEEK_END);
-	auto size = ftell(f);
-	fseek(f, 0, SEEK_SET);
-
-	// read the whole thing
-	auto data = std::vector<u1>(size);
-	fread(data.data(), 1, data.size(), f);
-	fclose(f);
-
-	// parse it
-	Parse(data);
-}
-
-ClassFile::ClassFile(std::span<const u1> classData)
-{
-	Parse(classData);
 }
 
 ClassFile::MemberView::MemberView(const MemberInfo& info, const std::vector<u1>& stringData,
