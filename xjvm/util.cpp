@@ -10,3 +10,12 @@ void XJVM::ReadBytes(std::span<const u1> data, size_t& offset, std::span<u1> des
 	memcpy(dest.data(), &data[offset], dest.size());
 	offset += dest.size();
 }
+
+size_t XJVM::FileSize(FILE* file)
+{
+	auto orig = ftell(file);
+	fseek(file, 0, SEEK_END);
+	auto size = ftell(file);
+	fseek(file, orig, SEEK_SET);
+	return size;
+}

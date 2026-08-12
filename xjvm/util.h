@@ -72,4 +72,11 @@ template <typename T> void ReadArray(std::span<const uint8_t> data, size_t& offs
 	ReadBytes(data, offset, std::span<u1>((uint8_t*)dest.data(), dest.size_bytes()));
 }
 
+/// <summary>
+/// Get the size of the given file
+/// </summary>
+/// <param name="file">The file to get the size of</param>
+/// <returns>The size of the file</returns>
+size_t FileSize(FILE* file);
+
 } // namespace XJVM

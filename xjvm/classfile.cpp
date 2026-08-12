@@ -12,13 +12,8 @@ ClassFile::ClassFile(const char* fileName)
 		return;
 	}
 
-	// get the size
-	fseek(f, 0, SEEK_END);
-	auto size = ftell(f);
-	fseek(f, 0, SEEK_SET);
-
 	// read the whole thing
-	auto data = std::vector<u1>(size);
+	auto data = std::vector<u1>(FileSize(f));
 	fread(data.data(), 1, data.size(), f);
 	fclose(f);
 
