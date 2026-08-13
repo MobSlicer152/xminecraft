@@ -40,8 +40,8 @@ class JarFile
 	/// Get a class by name
 	/// </summary>
 	/// <param name="name">The name of the class</param>
-	/// <returns>The class, if present</returns>
-	const std::optional<ClassFile&> GetClass(const std::string_view name) const;
+	/// <returns>The class, if present. Otherwise nullptr.</returns>
+	const ClassFile* GetClass(const std::string_view name) const;
 
 	/// <summary>
 	/// Get the classes in this jar

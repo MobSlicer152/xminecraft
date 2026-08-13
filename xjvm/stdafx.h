@@ -8,3 +8,6 @@
 #pragma warning(disable : 4002, justification : "adding messages to CRT asserts")
 
 #include "xjvm.h"
+
+#include "miniz.h"
+#include <string>

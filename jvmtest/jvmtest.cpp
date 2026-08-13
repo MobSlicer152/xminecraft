@@ -15,32 +15,35 @@ int main(int argc, char* argv[])
 
 	XJVM::g_msgCallback = (XJVM::MessageCallback)puts;
 
-	XJVM::ClassFile test(argv[1]);
-	if (!test.IsValid())
+	XJVM::JarFile jar(argv[1]);
+	if (!jar.IsValid())
 	{
-		std::println("failed to parse class {}", argv[1]);
+		std::println("failed to parse jar {}", argv[1]);
 		return ERROR_INVALID_DATA;
 	}
 
-	std::println("class name is \"{}\"", test.GetString(test.GetThisClass()));
-	std::println("superclass name is \"{}\"", test.GetString(test.GetSuperClass()));
-	std::println("class version is {}.{}", test.GetMajorVersion(), test.GetMinorVersion());
-
-	for (uint16_t i = 1; i < test.GetConstantPoolSize(); i++)
+	for (const auto& [name, classFile] : jar.GetClasses())
 	{
-		auto constant = test.GetConstant(i);
-		//std::println("constant {} has type {} and string \"{}\"", i, (XJVM::u1)constant.tag, test.GetString(constant));
-	}
+		std::println("class name is \"{}\"", classFile.GetString(classFile.GetThisClass()));
+		std::println("superclass name is \"{}\"", classFile.GetString(classFile.GetSuperClass()));
+		std::println("class version is {}.{}", classFile.GetMajorVersion(), classFile.GetMinorVersion());
 
-	for (size_t i = 0; i < test.GetInterfaceCount(); i++)
-	{
-		std::println("interface {} is {}", i, test.GetInterface(i));
-	}
+		for (uint16_t i = 1; i < classFile.GetConstantPoolSize(); i++)
+		{
+			auto constant = classFile.GetConstant(i);
+			// std::println("constant {} has type {} and string \"{}\"", i, (XJVM::u1)constant.tag, test.GetString(constant));
+		}
 
-	auto methods = test.GetMethods();
-	for (const auto& method : methods)
-	{
-		std::println("{} -> {}", method.GetName(), method.GetDescriptor());
+		for (size_t i = 0; i < classFile.GetInterfaceCount(); i++)
+		{
+			std::println("interface {} is {}", i, classFile.GetInterface(i));
+		}
+
+		auto methods = classFile.GetMethods();
+		for (const auto& method : methods)
+		{
+			std::println("{} -> {}", method.GetName(), method.GetDescriptor());
+		}
 	}
 
 	return ERROR_SUCCESS;
