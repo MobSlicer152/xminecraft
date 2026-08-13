@@ -19,6 +19,8 @@ JarFile::JarFile(const char* fileName)
 
 	// parse it
 	Parse(data);
+
+	DbgMessage("Loaded %zu classes from %s", m_classes.size(), fileName);
 }
 
 JarFile::JarFile(std::span<const uint8_t> data)
@@ -55,7 +57,6 @@ void JarFile::Parse(std::span<const uint8_t> data)
 	}
 
 	auto count = mz_zip_reader_get_num_files(&archive);
-	DbgMessage("Jar has %u files", count);
 	for (size_t i = 0; i < count; i++)
 	{
 		size_t size = mz_zip_reader_get_filename(&archive, i, nullptr, 0);
@@ -74,7 +75,6 @@ void JarFile::Parse(std::span<const uint8_t> data)
 			continue;
 		}
 
-		DbgMessage("Processing file %s from jar", name.c_str());
 		size = 0;
 		auto data = mz_zip_reader_extract_to_heap(&archive, i, &size, 0);
 		if (!data)

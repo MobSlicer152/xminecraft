@@ -217,7 +217,7 @@ void __cdecl main()
 {
 	XJVM::g_msgCallback = [](const char* msg) { DbgPrint("%s\n", msg); };
 
-	XJVM::ClassFile test("D:\\Test.class");
+	XJVM::JarFile test("D:\\minecraft.jar");
 	if (!test.IsValid())
 	{
 		return;
