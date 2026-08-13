@@ -47,6 +47,7 @@ void JarFile::Parse(std::span<const uint8_t> data)
 {
 	m_valid = true;
 
+	// parse the archive
 	mz_zip_archive archive = {};
 	if (!mz_zip_reader_init_mem(&archive, data.data(), data.size(), 0))
 	{
@@ -56,9 +57,11 @@ void JarFile::Parse(std::span<const uint8_t> data)
 		return;
 	}
 
+	// go through all the files
 	auto count = mz_zip_reader_get_num_files(&archive);
 	for (size_t i = 0; i < count; i++)
 	{
+		// get the filename size
 		size_t size = mz_zip_reader_get_filename(&archive, i, nullptr, 0);
 		if (size < 1)
 		{
@@ -67,14 +70,17 @@ void JarFile::Parse(std::span<const uint8_t> data)
 			continue;
 		}
 
+		// read the filename (size is for NUL terminated, std::string automatically includes that)
 		auto name = std::string(size - 1, 0);
-		mz_zip_reader_get_filename(&archive, i, name.data(), name.size() + 1);
+		mz_zip_reader_get_filename(&archive, i, name.data(), size);
 
+		// skip if not a class, manifests aren't relevant yet
 		if (!name.ends_with(".class"))
 		{
 			continue;
 		}
 
+		// extract the class
 		size = 0;
 		auto data = mz_zip_reader_extract_to_heap(&archive, i, &size, 0);
 		if (!data)
@@ -85,6 +91,7 @@ void JarFile::Parse(std::span<const uint8_t> data)
 			continue;
 		}
 
+		// parse it
 		auto classFile = ClassFile(std::span((uint8_t*)data, size));
 		free(data);
 		if (!classFile.IsValid())
@@ -93,6 +100,7 @@ void JarFile::Parse(std::span<const uint8_t> data)
 			continue;
 		}
 
+		// class was valid, store it by its name
 		m_classes[classFile.GetString(classFile.GetThisClass())] = classFile;
 	}
 }
