@@ -311,7 +311,8 @@ class ClassFile
 
   private:
 	static constexpr u4 MAGIC = 0xCAFEBABE;
-	static constexpr u2 MAJOR_VERSION = 50; // Java SE 6
+	static constexpr u2 MAX_MAJOR_VERSION = 50; // Java SE 6
+	static constexpr u2 MIN_MAJOR_VERSION = 49; // Java SE 5
 
 	static constexpr ConstantInfo CONSTANT_PAD_ENTRY = {};
 
@@ -319,7 +320,7 @@ class ClassFile
 
 	u4 m_magic = MAGIC;
 	u2 m_minorVersion = 0;
-	u2 m_majorVersion = MAJOR_VERSION;
+	u2 m_majorVersion = MAX_MAJOR_VERSION;
 	u2 m_constantPoolSize = 0;
 	std::map<u2, ConstantInfo> m_constantPool;
 	ClassAccessFlags m_accessFlags = ClassAccessFlags::UNKNOWN;

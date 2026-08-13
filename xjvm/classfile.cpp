@@ -44,9 +44,9 @@ void ClassFile::Parse(std::span<const u1> data)
 	// read and check version
 	m_minorVersion = ReadNextValue<u2>(data, offset);
 	m_majorVersion = ReadNextValue<u2>(data, offset);
-	if (m_majorVersion != MAJOR_VERSION)
+	if (m_majorVersion < MIN_MAJOR_VERSION || m_majorVersion > MAX_MAJOR_VERSION)
 	{
-		Message("class version %hu.%hu does not match supported version %hu", m_majorVersion, m_minorVersion, MAJOR_VERSION);
+		Message("class version %hu.%hu does not match supported version range %hu-%hu", m_majorVersion, m_minorVersion, MIN_MAJOR_VERSION, MAX_MAJOR_VERSION);
 		m_valid = false;
 		return;
 	}
