@@ -35,6 +35,11 @@ bool JarFile::IsValid() const
 
 const ClassFile* JarFile::GetClass(const std::string_view name) const
 {
+	if (m_classes.contains(name))
+	{
+		return &m_classes.at(name);
+	}
+
 	return nullptr;
 }
 
