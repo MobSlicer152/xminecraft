@@ -59,43 +59,4 @@ typedef void* JReturnAddress;
 
 typedef int JBoolean;
 
-/// <summary>
-/// The type for the message callback
-/// </summary>
-typedef void (*MessageCallback)(const char* message);
-
-/// <summary>
-/// User overridable message function
-/// </summary>
-extern MessageCallback g_msgCallback;
-
-/// <summary>
-/// Call the message callback
-/// </summary>
-/// <param name="msg">Format string to use</param>
-/// <param name="">Additional arguments for format string</param>
-static constexpr void Message(_Printf_format_string_ const char* msg, ...)
-{
-	if (g_msgCallback)
-	{
-		va_list args;
-		char buf[256] = {};
-		va_start(args, msg);
-#pragma warning(suppress : 4996)
-		_vsnprintf(buf, _countof(buf), msg, args);
-		g_msgCallback(buf);
-		va_end(args);
-	}
-}
-
-/// <summary>
-/// Abort and write a message if condition is false
-/// </summary>
-#define XJVM_ASSERT(cond, ...)                                     \
-	if (!(cond))                                                   \
-	{                                                              \
-		XJVM::Message("Assertion " #cond " failed: " __VA_ARGS__); \
-		abort();                                                   \
-	}
-
 } // namespace XJVM
