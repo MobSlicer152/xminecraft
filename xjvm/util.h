@@ -66,7 +66,7 @@ template <typename E>
 static constexpr E operator|(E a, E b)
 	requires(IsIntegralEnum<E>)
 {
-	return (E)(std::to_underlying(a) | std::to_underlying(b))
+	return (E)(std::to_underlying(a) | std::to_underlying(b));
 }
 
 /// <summary>
@@ -76,7 +76,7 @@ template <typename E>
 static constexpr E operator&(E a, E b)
 	requires(IsIntegralEnum<E>)
 {
-	return std::to_underlying(a) & std::to_underlying(b)
+	return (E)(std::to_underlying(a) & std::to_underlying(b));
 }
 
 /// <summary>
