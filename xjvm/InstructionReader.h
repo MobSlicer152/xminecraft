@@ -15,10 +15,9 @@ enum class OperandType
 {
 	Unknown = 0,
 	LocalIndex = 1, // uint32_t
-	ArrayRef = 2,	// JReference
-	ObjectRef = 3,	// JReference
-	Immediate4 = 4, // JInt or JFloat
-	Immediate8 = 8, // JLong or JDouble
+	Reference = 2,	// JReference
+	Immediate4 = 3, // JInt or JFloat
+	Immediate8 = 4, // JLong or JDouble
 };
 
 /// <summary>
@@ -29,7 +28,7 @@ struct Operand
 	OperandType type;
 	union {
 		uint32_t indexVal; // LocalIndex
-		JReference refVal; // ArrayRef or ObjectRef
+		JReference refVal; // Reference
 		JInt intVal;	   // Immediate4
 		JLong longVal;	   // Immediate8
 		JFloat floatVal;   // Immediate4
@@ -55,12 +54,11 @@ class IInstructionProcessor
 	/// <summary>
 	/// Process the instruction at the given offset
 	/// </summary>
-	/// <param name="offset">The offset into the bytecode the instruction is at</param>
+	/// <param name="offset">The offset into the bytecode the instruction is at, may be modified if needed</param>
 	/// <param name="opcode">The opcode of the instruction</param>
-	/// <param name="operands">The current operand stack (managed by reader)</param>
 	/// <param name="data">Any bytes in the instruction after the opcode</param>
 	/// <returns>Whether the instruction was processed successfully</returns>
-	virtual bool ProcessInstruction(uint32_t offset, Opcode opcode, const std::stack<Operand>& operands,
+	virtual bool ProcessInstruction(uint32_t& offset, Opcode opcode,
 									std::span<const uint8_t> data = {}) = 0;
 };
 
@@ -94,11 +92,10 @@ class InstructionReader
 	/// <summary>
 	/// Visit an instruction
 	/// </summary>
-	/// <param name="offset">The offset of the instruction</param>
-	/// <param name="operands">The current operand stack</param>
+	/// <param name="offset">The offset of the current instruction</param>
 	/// <param name="processor">Instruction processor to call</param>
 	/// <returns>The length of the instruction, or UINT32_MAX on failure</returns>
-	uint32_t VisitInstruction(uint32_t offset, std::stack<Operand>& operands, IInstructionProcessor* processor);
+	uint32_t VisitInstruction(uint32_t& offset, IInstructionProcessor* processor);
 };
 
 } // namespace XJVM
