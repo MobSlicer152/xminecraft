@@ -5,6 +5,20 @@
 #include <windows.h>
 #include "../xjvm/xjvm.h"
 
+class PrintInstructionProcessor : public XJVM::IInstructionProcessor
+{
+	// Inherited via IInstructionProcessor
+	void BeginProcessing(std::span<const uint8_t> bytecode) override
+	{
+	}
+
+	bool ProcessInstruction(uint32_t& offset, XJVM::Opcode opcode, std::span<const uint8_t> data) override
+	{
+		std::println("{} -> {} 0x{:02X} <{}>", offset, XJVM::OPCODE_INFO[opcode].name, opcode, data.size());
+		return true;
+	}
+};
+
 int main(int argc, char* argv[])
 {
 	if (argc < 2)
@@ -43,6 +57,13 @@ int main(int argc, char* argv[])
 		for (const auto& method : methods)
 		{
 			std::println("{} -> {}", method.GetName(), method.GetDescriptor());
+			auto code = classFile.GetCode(method);
+			XJVM::InstructionReader reader(code);
+			PrintInstructionProcessor proc;
+			if (reader.Parse(&proc) < code.size())
+			{
+				std::println("FAILED TO PARSE METHOD {}", method.GetName());
+			}
 		}
 	}
 
