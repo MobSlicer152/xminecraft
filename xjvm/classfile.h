@@ -307,7 +307,14 @@ class ClassFile
 	/// </summary>
 	/// <param name="codeAttrib">The code attribute</param>
 	/// <returns>A span of the code</returns>
-	std::span<const u1> GetCode(CodeAttribute& codeAttrib) const;
+	std::span<const u1> GetCode(const CodeAttribute& codeAttrib) const;
+
+	/// <summary>
+	/// Get the code from a method
+	/// </summary>
+	/// <param name="method">The method</param>
+	/// <returns>The code</returns>
+	std::span<const u1> GetCode(const MemberView& method) const;
 
   private:
 	static constexpr u4 MAGIC = 0xCAFEBABE;

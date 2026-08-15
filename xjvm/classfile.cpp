@@ -46,7 +46,8 @@ void ClassFile::Parse(std::span<const u1> data)
 	m_majorVersion = ReadNextValue<u2>(data, offset);
 	if (m_majorVersion < MIN_MAJOR_VERSION || m_majorVersion > MAX_MAJOR_VERSION)
 	{
-		Message("class version %hu.%hu does not match supported version range %hu-%hu", m_majorVersion, m_minorVersion, MIN_MAJOR_VERSION, MAX_MAJOR_VERSION);
+		Message("class version %hu.%hu does not match supported version range %hu-%hu", m_majorVersion, m_minorVersion,
+				MIN_MAJOR_VERSION, MAX_MAJOR_VERSION);
 		m_valid = false;
 		return;
 	}
@@ -534,9 +535,22 @@ bool ClassFile::IsValid() const
 	return m_valid;
 }
 
-std::span<const u1> ClassFile::GetCode(CodeAttribute& codeAttrib) const
+std::span<const u1> ClassFile::GetCode(const CodeAttribute& codeAttrib) const
 {
 	return codeAttrib.code.View(m_code.data());
+}
+
+std::span<const XJVM::u1> ClassFile::GetCode(const MemberView& method) const
+{
+	for (const auto& attrib : method.GetAttributes())
+	{
+		if (attrib.GetType() == AttributeType::Code)
+		{
+			return GetCode(attrib.GetInfo<CodeAttribute>());
+		}
+	}
+
+	return {};
 }
 
 #define VECTOR_GETTER(T, name)                                \
