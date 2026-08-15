@@ -54,6 +54,9 @@
     <ClInclude Include="JarFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InstructionReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClassFile.cpp">
@@ -69,6 +72,9 @@
       <Filter>External Files</Filter>
     </ClCompile>
     <ClCompile Include="JarFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InstructionReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

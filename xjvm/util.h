@@ -55,6 +55,31 @@ static constexpr void Message(_Printf_format_string_ const char* msg, ...)
 	}
 
 /// <summary>
+/// True if E is an enum that derives from an integral type
+/// </summary>
+template <typename E> static constexpr bool IsIntegralEnum = std::is_enum_v<E> && std::is_integral_v<std::underlying_type_t<E>>;
+
+/// <summary>
+/// Bitwise or for enums
+/// </summary>
+template <typename E>
+static constexpr E operator|(E a, E b)
+	requires(IsIntegralEnum<E>)
+{
+	return (E)(std::to_underlying(a) | std::to_underlying(b))
+}
+
+/// <summary>
+/// Bitwise and for enums
+/// </summary>
+template <typename E>
+static constexpr E operator&(E a, E b)
+	requires(IsIntegralEnum<E>)
+{
+	return std::to_underlying(a) & std::to_underlying(b)
+}
+
+/// <summary>
 /// Reverses the bytes in a value if the system endian is not big endian
 /// </summary>
 /// <typeparam name="T">The integral type of the value</typeparam>

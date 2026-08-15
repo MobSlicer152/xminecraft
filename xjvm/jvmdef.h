@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <limits>
 #include <span>
+#include <stack>
 #include <string_view>
 #include <utility>
 
@@ -28,6 +29,7 @@ typedef int8_t JByte;
 typedef int16_t JShort;
 typedef int32_t JInt;
 typedef int64_t JLong;
+typedef uint16_t JChar;
 
 static constexpr JByte JBYTE_MIN = INT8_MIN;
 static constexpr JByte JBYTE_MAX = INT8_MAX;
@@ -37,6 +39,8 @@ static constexpr JInt JINT_MIN = INT32_MIN;
 static constexpr JInt JINT_MAX = INT32_MAX;
 static constexpr JLong JLONG_MIN = INT64_MIN;
 static constexpr JLong JLONG_MAX = INT64_MAX;
+static constexpr JChar JCHAR_MIN = 0;
+static constexpr JChar JCHAR_MAX = UINT16_MAX;
 
 // 3.3.2 Floating-Point Types and Values
 
@@ -54,6 +58,10 @@ static constexpr JDouble JDOUBLE_EPISLON = DBL_EPSILON;
 // 3.3.3 The returnAddress Type
 
 typedef void* JReturnAddress;
+
+// 3.4 Reference Types and Values
+
+typedef size_t JReference;
 
 // 3.3.4 The boolean Type
 

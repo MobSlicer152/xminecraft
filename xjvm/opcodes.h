@@ -6,18 +6,30 @@
 
 namespace XJVM
 {
+
 /// <summary>
-/// JVM bytecode instructions
+/// An opcode
 /// </summary>
-namespace Opcode
-{
+using Opcode = uint8_t;
+
+/// <summary>
+/// Information about an opcode.
+/// </summary>
 struct OpcodeInfo
 {
-	uint8_t code;
+	Opcode code;
 	std::string_view name;
 };
 
-#define XJVM_OPCODE(name, val) static constexpr OpcodeInfo name = {val, #name};
+/// <summary>
+/// JVM bytecode instructions
+/// </summary>
+namespace Opcodes
+{
+
+#define XJVM_OPCODE(name, val)                                \
+	static constexpr Opcode name = (val);                     \
+	static constexpr OpcodeInfo name##_INFO = {name, #name};
 
 #include "opcodes.inc"
 
