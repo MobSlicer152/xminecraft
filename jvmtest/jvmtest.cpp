@@ -19,7 +19,7 @@ class PrintInstructionProcessor: public XJVM::IInstructionProcessor
 		std::for_each(data.begin(), data.end(),
 					  [&](const auto val) { dataStr = std::format("{}{}{:02X}", dataStr, dataStr.empty() ? "" : " ", val); });
 
-		std::println("{} -> {} 0x{:02X} {} <{}>", offset, XJVM::OPCODE_INFO[opcode].name, opcode, std::to_underlying(flags),
+		std::println("{:08X}  {:02X} {}\t\t{} <{}>", offset, opcode, std::to_underlying(flags), XJVM::OPCODE_INFO[opcode].name,
 					 dataStr);
 		return true;
 	}
