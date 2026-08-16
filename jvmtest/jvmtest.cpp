@@ -1,20 +1,26 @@
 #define NO_STRICT
 #define _NO_CRT_STDIO_INLINE
 
+#include "../xjvm/xjvm.h"
 #include <print>
 #include <windows.h>
-#include "../xjvm/xjvm.h"
 
-class PrintInstructionProcessor : public XJVM::IInstructionProcessor
+class PrintInstructionProcessor: public XJVM::IInstructionProcessor
 {
 	// Inherited via IInstructionProcessor
 	void BeginProcessing(std::span<const uint8_t> bytecode) override
 	{
 	}
 
-	bool ProcessInstruction(uint32_t& offset, XJVM::Opcode opcode, std::span<const uint8_t> data) override
+	bool ProcessInstruction(uint32_t& offset, XJVM::Opcode opcode, XJVM::InstructionFlags flags,
+							std::span<const uint8_t> data) override
 	{
-		std::println("{} -> {} 0x{:02X} <{}>", offset, XJVM::OPCODE_INFO[opcode].name, opcode, data.size());
+		std::string dataStr;
+		std::for_each(data.begin(), data.end(),
+					  [&](const auto val) { dataStr = std::format("{}{}{:02X}", dataStr, dataStr.empty() ? "" : " ", val); });
+
+		std::println("{} -> {} 0x{:02X} {} <{}>", offset, XJVM::OPCODE_INFO[opcode].name, opcode, std::to_underlying(flags),
+					 dataStr);
 		return true;
 	}
 };
