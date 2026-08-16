@@ -308,7 +308,7 @@ OffsetSpan<const u1> ClassFile::ParseAttribute(std::span<const u1> data, u4& off
 		// read the size of the code and extend the code buffer for it
 		auto codeLength = ReadNextValue<u4>(data, offset);
 		auto codeOffset = m_code.size();
-		m_code.resize(m_code.size() + codeLength);
+		m_code.resize(Align(m_code.size() + codeLength, 4u));
 
 		// read the code
 		auto codeSpan = OffsetSpan<u1>(codeOffset, codeLength);
