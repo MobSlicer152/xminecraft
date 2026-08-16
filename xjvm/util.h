@@ -54,6 +54,11 @@ static constexpr void Message(_Printf_format_string_ const char* msg, ...)
 		abort();                                                   \
 	}
 
+template <std::integral T> static constexpr T Align(T x, T align)
+{
+	return (x + align - 1) & ~(align - 1);
+}
+
 /// <summary>
 /// True if E is an enum that derives from an integral type
 /// </summary>
@@ -70,6 +75,16 @@ static constexpr E operator|(E a, E b)
 }
 
 /// <summary>
+/// Bitwise or for enums
+/// </summary>
+template <typename E>
+static constexpr E operator|=(E& a, E b)
+	requires(IsIntegralEnum<E>)
+{
+	return a = (E)(std::to_underlying(a) | std::to_underlying(b));
+}
+
+/// <summary>
 /// Bitwise and for enums
 /// </summary>
 template <typename E>
@@ -77,6 +92,16 @@ static constexpr E operator&(E a, E b)
 	requires(IsIntegralEnum<E>)
 {
 	return (E)(std::to_underlying(a) & std::to_underlying(b));
+}
+
+/// <summary>
+/// Bitwise and for enums
+/// </summary>
+template <typename E>
+static constexpr E operator&=(E& a, E b)
+	requires(IsIntegralEnum<E>)
+{
+	return a = (E)(std::to_underlying(a) & std::to_underlying(b));
 }
 
 /// <summary>
