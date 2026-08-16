@@ -36,6 +36,12 @@ struct Operand
 	};
 };
 
+enum class InstructionFlags
+{
+	None = 0 << 0,
+	Wide = 1 << 0,
+};
+
 /// <summary>
 /// Interface for instruction processors to implement
 /// </summary>
@@ -56,9 +62,10 @@ class IInstructionProcessor
 	/// </summary>
 	/// <param name="offset">The offset into the bytecode the instruction is at, may be modified if needed</param>
 	/// <param name="opcode">The opcode of the instruction</param>
+	/// <param name="flags">Flags for this instruction</param>
 	/// <param name="data">Any bytes in the instruction after the opcode</param>
 	/// <returns>Whether the instruction was processed successfully</returns>
-	virtual bool ProcessInstruction(uint32_t& offset, Opcode opcode,
+	virtual bool ProcessInstruction(uint32_t& offset, Opcode opcode, InstructionFlags flags,
 									std::span<const uint8_t> data = {}) = 0;
 };
 
