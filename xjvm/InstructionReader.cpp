@@ -282,7 +282,7 @@ uint32_t InstructionReader::VisitInstruction(uint32_t& offset, IInstructionProce
 	case Opcodes::TABLESWITCH: {
 		// up to 3 bytes of padding
 		size_t size = 1;
-		size += Align(offset + size, 4u) - offset;
+		size += Align(offset + size, 4u) - (offset + size);
 
 		// read values so the size of the table can be calculated
 		auto defaultIdx = ReadNextValue<uint32_t>(here, size);
@@ -298,7 +298,7 @@ uint32_t InstructionReader::VisitInstruction(uint32_t& offset, IInstructionProce
 	case Opcodes::LOOKUPSWITCH: {
 		// up to 3 bytes of padding
 		size_t size = 1;
-		size += Align(offset + size, 4u) - offset;
+		size += Align(offset + size, 4u) - (offset + size);
 
 		// read values so the size of the table can be calculated
 		auto defaultIdx = ReadNextValue<uint32_t>(here, size);

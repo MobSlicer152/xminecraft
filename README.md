@@ -5,6 +5,10 @@ and will eventually also use [rxgl](https://github.com/Team-Resurgent/RXGL) to m
 
 I'm not sure why I'm doing this, I probably just thought it would be funny and a neat flex.
 
+## Progress
+
+XJVM can parse class files, jar files, and Java bytecode on Windows and the Xbox, all with reasonable speed.
+
 ## JVM
 
 Initially, I had hoped to port HotSpot or OpenJ9, but they're both heavily designed around dynamic linking.
