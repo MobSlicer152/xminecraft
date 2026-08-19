@@ -1,0 +1,3 @@
+[submodule "external/xbyak"]
+	path = external/xbyak
+	url = https://github.com/herumi/xbyak
