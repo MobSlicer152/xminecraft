@@ -27,6 +27,13 @@ class ClassFile
 	ClassFile() = default;
 
 	/// <summary>
+	/// No copy constructor, kind of expensive and not likely what you meant to do
+	/// </summary>
+	ClassFile(const ClassFile&) = delete;
+
+	ClassFile(ClassFile&&) = default;
+
+	/// <summary>
 	/// Parse a class file from disk
 	/// </summary>
 	/// <param name="fileName">The path to the class file to parse</param>

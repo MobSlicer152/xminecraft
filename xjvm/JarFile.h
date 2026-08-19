@@ -4,8 +4,11 @@
 
 #include "ClassFile.h"
 #include "jvmdef.h"
+#include <memory>
 #include <optional>
+#include <string>
 #include <unordered_map>
+#include <ranges>
 
 namespace XJVM
 {
@@ -17,7 +20,7 @@ class JarFile
 {
   public:
 	JarFile() = default;
-	~JarFile() = default;
+	~JarFile();
 
 	/// <summary>
 	/// Parse a jar from disk
@@ -41,17 +44,21 @@ class JarFile
 	/// </summary>
 	/// <param name="name">The name of the class</param>
 	/// <returns>The class, if present. Otherwise nullptr.</returns>
-	const ClassFile* GetClass(const std::string_view name) const;
+	std::optional<ClassFile> GetClass(const std::string_view name) const;
 
 	/// <summary>
-	/// Get the classes in this jar
+	/// Get the class names in this jar
 	/// </summary>
-	/// <returns>The classes mapped by name</returns>
-	const std::unordered_map<std::string_view, ClassFile>& GetClasses() const;
+	/// <returns>The class names</returns>
+	const auto GetClasses() const
+	{
+		return std::views::keys(m_classes);
+	}
 
   private:
 	bool m_valid = false;
-	std::unordered_map<std::string_view, ClassFile> m_classes;
+	void* m_archive = nullptr;
+	std::unordered_map<std::string, int> m_classes;
 
 	/// <summary>
 	/// Parse the jar file
