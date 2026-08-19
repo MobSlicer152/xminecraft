@@ -131,7 +131,7 @@ template <std::integral T> static constexpr T SwapEndian(T x)
 /// <returns>The value read</returns>
 template <std::integral T> T ReadValueAt(std::span<const uint8_t> data, size_t offset)
 {
-	XJVM_ASSERT((offset + sizeof(T)) < data.size(), "tried to read past end of class file data");
+	XJVM_ASSERT((offset + sizeof(T)) <= data.size(), "tried to read past end of class file data");
 	return SwapEndian(*(const T*)(data.data() + offset));
 }
 

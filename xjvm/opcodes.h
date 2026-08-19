@@ -1,5 +1,4 @@
-/// Yes, as a matter of fact, I did hand type these from the spec. This is because I am not smart.
-/// TODO: some of this needs refactoring to actually be useful, but the values are enough for now.
+/// Information about JVM bytecode instructions
 
 #pragma once
 
