@@ -7,20 +7,23 @@ I'm not sure why I'm doing this, I probably just thought it would be funny and a
 
 ## Progress
 
-XJVM can parse class files, jar files, and Java bytecode on Windows and the Xbox, all with reasonable speed.
+- [x] Class file parsing
+- [x] Jar file parsing
+- [x] Bytecode parsing
+- [ ] JIT compiler (currently being designed)
+- [ ] Class linking
+- [ ] Runtime environment
+- [ ] JRE reimplementation
+- [ ] Native reimplementation
+- [ ] Optimization
 
-## JVM
+## JIT
 
-Initially, I had hoped to port HotSpot or OpenJ9, but they're both heavily designed around dynamic linking.
-Instead, for the sake of learning, simplicity (ha), and as a flex, I'm just writing my own Java 6 VM. So far
-I'm about two thirds done parsing class files, and I plan to get some basic bytecode processing done after that.
-I might also try JIT, if it's feasible.
+I've been reading about how JIT compilers and bytecode interpreters generally work, and designing my own.
+It's probably gonna work something like this:
 
-Security and class file validation isn't really a priority, the point is to run known-good code from Minecraft.
-
-## Base game modifications
-
-I plan to add controller support, and try to optimize the game's memory usage as much as I can. Hopefully that makes
-it an actually pleasant experience. If necessary, I'll rewrite the raw OpenGL 1.1 rendering code with D3D8, but that
-sounds pretty time consuming. Hopefully I can also make mods like Better Than Adventure work too.
+- Scan for beginnings of control flow blocks
+- Scan for ends of control flow blocks
+- Interpret blocks enough to properly map the operand stack
+- Translate to final x86 machine code
 
