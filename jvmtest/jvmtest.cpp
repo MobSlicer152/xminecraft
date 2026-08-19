@@ -1,29 +1,10 @@
 #define NO_STRICT
 #define _NO_CRT_STDIO_INLINE
+#define XJVM_ENABLE_INSTRUCTION_PRINTER
 
 #include "../xjvm/xjvm.h"
 #include <print>
 #include <windows.h>
-
-class PrintInstructionProcessor: public XJVM::IInstructionProcessor
-{
-	// Inherited via IInstructionProcessor
-	void BeginProcessing(std::span<const uint8_t> bytecode) override
-	{
-	}
-
-	bool ProcessInstruction(uint32_t& offset, XJVM::Opcode opcode, XJVM::InstructionFlags flags,
-							std::span<const uint8_t> data) override
-	{
-		std::string dataStr;
-		std::for_each(data.begin(), data.end(),
-					  [&](const auto val) { dataStr = std::format("{}{}{:02X}", dataStr, dataStr.empty() ? "" : " ", val); });
-
-		std::println("{:08X}  {:02X} {}\t\t{} <{}>", offset, opcode, std::to_underlying(flags), XJVM::OPCODE_INFO[opcode].name,
-					 dataStr);
-		return true;
-	}
-};
 
 int main(int argc, char* argv[])
 {
@@ -65,7 +46,7 @@ int main(int argc, char* argv[])
 			std::println("{} -> {}", method.GetName(), method.GetDescriptor());
 			auto code = classFile.GetCode(method);
 			XJVM::InstructionReader reader(code);
-			PrintInstructionProcessor proc;
+			XJVM::PrintInstructionProcessor proc;
 			if (reader.Parse(&proc) < code.size())
 			{
 				std::println("FAILED TO PARSE METHOD {}", method.GetName());

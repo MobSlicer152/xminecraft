@@ -2,6 +2,12 @@
 
 #pragma once
 
+#ifdef XJVM_ENABLE_INSTRUCTION_PRINTER
+#include <algorithm>
+#include <format>
+#include <print>
+#include <string>
+#endif
 #include "jvmdef.h"
 #include "opcodes.h"
 
@@ -104,5 +110,27 @@ class InstructionReader
 	/// <returns>The length of the instruction, or UINT32_MAX on failure</returns>
 	uint32_t VisitInstruction(uint32_t& offset, IInstructionProcessor* processor);
 };
+
+#ifdef XJVM_ENABLE_INSTRUCTION_PRINTER
+class PrintInstructionProcessor: public IInstructionProcessor
+{
+	// Inherited via IInstructionProcessor
+	void BeginProcessing(std::span<const uint8_t> bytecode) override
+	{
+	}
+
+	bool ProcessInstruction(uint32_t& offset, XJVM::Opcode opcode, XJVM::InstructionFlags flags,
+							std::span<const uint8_t> data) override
+	{
+		std::string dataStr;
+		std::for_each(data.begin(), data.end(),
+					  [&](const auto val) { dataStr = std::format("{}{}{:02X}", dataStr, dataStr.empty() ? "" : " ", val); });
+
+		std::println("{:08X}  {:02X} {}\t\t{} <{}>", offset, opcode, std::to_underlying(flags), OPCODE_INFO[opcode].name,
+					 dataStr);
+		return true;
+	}
+};
+#endif
 
 } // namespace XJVM

@@ -4,7 +4,9 @@
 
 #pragma once
 
-#include "jvmdef.h"
+#include <bit>
+#include <cstdarg>
+#include <cstdio>
 
 namespace XJVM
 {

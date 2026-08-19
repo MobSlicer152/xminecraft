@@ -4,19 +4,8 @@
 
 #pragma once
 
-#include <algorithm>
-#include <array>
-#include <bit>
-#include <cassert>
-#include <concepts>
-#include <cstdarg>
-#include <cstdio>
 #include <cstdint>
 #include <limits>
-#include <span>
-#include <stack>
-#include <string_view>
-#include <utility>
 
 namespace XJVM
 {

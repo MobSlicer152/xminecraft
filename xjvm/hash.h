@@ -2,7 +2,9 @@
 
 #pragma once
 
-#include "jvmdef.h"
+#include <cstddef>
+#include <span>
+#include <string_view>
 
 namespace XJVM
 {
