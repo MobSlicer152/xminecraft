@@ -17,6 +17,7 @@
     <ClInclude Include="FieldDescriptor.h" />
     <ClInclude Include="InstructionReader.h" />
     <ClInclude Include="JarFile.h" />
+    <ClInclude Include="jit\JITBlockFinder.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="hash.h" />
     <ClInclude Include="jvmdef.h" />
@@ -35,6 +36,7 @@
     <ClCompile Include="ClassFile.cpp" />
     <ClCompile Include="InstructionReader.cpp" />
     <ClCompile Include="JarFile.cpp" />
+    <ClCompile Include="jit\JITBlockFinder.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -122,7 +124,7 @@
       <PreprocessorDefinitions>XBOX;_XBOX;MINIZ_NO_STDIO;MINIZ_NO_ARCHIVE_WRITING_APIS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\miniz</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)external\miniz</AdditionalIncludeDirectories>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -134,6 +136,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
       <OmitDefaultLibName>true</OmitDefaultLibName>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -161,7 +164,7 @@
       <PreprocessorDefinitions>XBOX;_XBOX;MINIZ_NO_STDIO;MINIZ_NO_ARCHIVE_WRITING_APIS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\miniz</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)external\miniz</AdditionalIncludeDirectories>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -172,6 +175,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
       <OmitDefaultLibName>true</OmitDefaultLibName>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

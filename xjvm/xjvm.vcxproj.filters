@@ -16,6 +16,12 @@
     <Filter Include="External Files">
       <UniqueIdentifier>{a05d8192-b0a5-4015-9c67-02d35c7ad9b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\JIT">
+      <UniqueIdentifier>{284ff54c-8294-43ca-b336-6789a1cf0a6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\JIT">
+      <UniqueIdentifier>{0b5109dd-3d31-4e8f-b8e1-376bb205754b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClassFile.h">
@@ -57,6 +63,9 @@
     <ClInclude Include="InstructionReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jit\JITBlockFinder.h">
+      <Filter>Header Files\JIT</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClassFile.cpp">
@@ -76,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="InstructionReader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jit\JITBlockFinder.cpp">
+      <Filter>Source Files\JIT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
