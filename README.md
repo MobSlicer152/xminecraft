@@ -19,11 +19,6 @@ I'm not sure why I'm doing this, I probably just thought it would be funny and a
 
 ## JIT
 
-I've been reading about how JIT compilers and bytecode interpreters generally work, and designing my own.
-It's probably gonna work something like this:
-
-- Scan for beginnings of control flow blocks
-- Scan for ends of control flow blocks
-- Create and process a control flow graph with inbound and outbound operand stacks
-- Translate to final x86 machine code
+I'm planning to use a static single assignment IR when translating bytecode into native code, just like HotSpot and most compilers.
+I've started making some basic control flow graph stuff.
 

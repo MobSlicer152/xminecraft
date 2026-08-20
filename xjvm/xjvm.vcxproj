@@ -19,6 +19,7 @@
     <ClInclude Include="InstructionReader.h" />
     <ClInclude Include="JarFile.h" />
     <ClInclude Include="jit\BlockFinder.h" />
+    <ClInclude Include="jit\SSA.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="hash.h" />
     <ClInclude Include="jvmdef.h" />
