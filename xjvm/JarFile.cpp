@@ -6,28 +6,38 @@ using namespace XJVM;
 
 JarFile::JarFile(const char* fileName)
 {
-	// open the file
-	auto f = fopen(fileName, "rb");
-	if (!f)
+	m_archive = new mz_zip_archive;
+	memset(m_archive, 0, sizeof(mz_zip_archive));
+
+	// open the archive
+	if (!mz_zip_reader_init_file(GetArchive(), fileName, 0))
 	{
-		Message("failed to open class file %s", fileName);
+		auto err = mz_zip_get_error_string(mz_zip_get_last_error(GetArchive()));
+		Message("Failed to parse jar file: %s", err);
+		m_valid = false;
 		return;
 	}
 
-	// read the whole thing
-	auto data = std::vector<u1>(FileSize(f));
-	fread(data.data(), 1, data.size(), f);
-	fclose(f);
-
-	// parse it
-	Parse(data);
+	Parse();
 
 	DbgMessage("Loaded %zu classes from %s", m_classes.size(), fileName);
 }
 
 JarFile::JarFile(std::span<const uint8_t> data)
 {
-	Parse(data);
+	m_archive = new mz_zip_archive;
+	memset(m_archive, 0, sizeof(mz_zip_archive));
+
+	// parse the archive
+	if (!mz_zip_reader_init_mem(GetArchive(), data.data(), data.size(), 0))
+	{
+		auto err = mz_zip_get_error_string(mz_zip_get_last_error(GetArchive()));
+		Message("Failed to parse jar file: %s", err);
+		m_valid = false;
+		return;
+	}
+
+	Parse();
 }
 
 JarFile::~JarFile()
@@ -75,19 +85,9 @@ std::optional<ClassFile> JarFile::GetClass(const std::string_view name) const
 	return {};
 }
 
-void JarFile::Parse(std::span<const uint8_t> data)
+void JarFile::Parse()
 {
 	m_valid = true;
-
-	// parse the archive
-	m_archive = new mz_zip_archive;
-	if (!mz_zip_reader_init_mem(GetArchive(), data.data(), data.size(), 0))
-	{
-		auto err = mz_zip_get_error_string(mz_zip_get_last_error(GetArchive()));
-		Message("Failed to parse jar file: %s", err);
-		m_valid = false;
-		return;
-	}
 
 	// go through all the files
 	auto count = mz_zip_reader_get_num_files(GetArchive());

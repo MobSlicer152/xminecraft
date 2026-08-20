@@ -63,8 +63,7 @@ class JarFile
 	/// <summary>
 	/// Parse the jar file
 	/// </summary>
-	/// <param name="data">Jar file data</param>
-	void Parse(std::span<const uint8_t> data);
+	void Parse();
 };
 
 } // namespace XJVM
