@@ -2,10 +2,10 @@
 
 #include "../InstructionReader.h"
 
-namespace XJVM
+namespace XJVM::JIT
 {
 
-class JITBlockFinder: public IInstructionProcessor
+class BlockFinder: public IInstructionProcessor
 {
 };
 
