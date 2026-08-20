@@ -35,6 +35,14 @@ uint32_t InstructionReader::Parse(IInstructionProcessor* processor /*= nullptr*/
 	return parsed;
 }
 
+void InstructionReader::Scan(IInstructionProcessor* processor) const
+{
+	for (const auto& instruction : m_instructions)
+	{
+		processor->ProcessInstruction(instruction);
+	}
+}
+
 const std::vector<Instruction>& InstructionReader::GetInstructions() const
 {
 	return m_instructions;

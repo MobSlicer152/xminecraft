@@ -92,7 +92,7 @@ class IInstructionProcessor
 	/// Process the instruction at the given offset
 	/// </summary>
 	/// <returns>Whether the instruction was processed successfully</returns>
-	virtual bool ProcessInstruction(Instruction& instruction) = 0;
+	virtual bool ProcessInstruction(const Instruction& instruction) = 0;
 };
 
 /// <summary>
@@ -118,6 +118,12 @@ class InstructionReader
 	/// <param name="processor">Instruction processor to call</param>
 	/// <returns>The number of bytes parsed successfully</returns>
 	uint32_t Parse(IInstructionProcessor* processor = nullptr);
+
+	/// <summary>
+	/// Run a processor on already parsed instructions
+	/// </summary>
+	/// <param name="processor">Instruction processor to call</param>
+	void Scan(IInstructionProcessor* processor) const;
 
 	/// <summary>
 	/// Get the parsed instructions
@@ -146,15 +152,15 @@ class PrintInstructionProcessor: public IInstructionProcessor
 	{
 	}
 
-	bool ProcessInstruction(Instruction& instruction) override
+	bool ProcessInstruction(const Instruction& instruction) override
 	{
 		std::string dataStr;
 		std::for_each(instruction.operands.begin(), instruction.operands.end(),
 					  [&](const auto val) { dataStr = std::format("{}{}{:02X}", dataStr, dataStr.empty() ? "" : " ", val); });
 
-		std::println("{:08X}  {:02X} {}\t\t{} <{}>", instruction.offset, instruction.opcode,
+		std::println("{:08X}  {:02X} {:08b}\t{} <{}>", instruction.offset, instruction.opcode,
 					 std::to_underlying(instruction.flags),
-					 OPCODE_INFO[opcode].name,
+					 OPCODE_INFO[instruction.opcode].name,
 					 dataStr);
 		return true;
 	}
