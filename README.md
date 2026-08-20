@@ -24,6 +24,6 @@ It's probably gonna work something like this:
 
 - Scan for beginnings of control flow blocks
 - Scan for ends of control flow blocks
-- Interpret blocks enough to properly map the operand stack
+- Create and process a control flow graph with inbound and outbound operand stacks
 - Translate to final x86 machine code
 
