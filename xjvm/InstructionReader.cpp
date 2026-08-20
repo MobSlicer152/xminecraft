@@ -35,7 +35,12 @@ uint32_t InstructionReader::Parse(IInstructionProcessor* processor /*= nullptr*/
 	return parsed;
 }
 
-uint32_t InstructionReader::VisitInstruction(uint32_t& offset, IInstructionProcessor* processor)
+const std::vector<Instruction>& InstructionReader::GetInstructions() const
+{
+	return m_instructions;
+}
+
+uint32_t InstructionReader::VisitInstruction(uint32_t offset, IInstructionProcessor* processor)
 {
 	// get a span that starts at the offset and check bounds
 	auto here = m_bytecode.subspan(offset);
@@ -61,7 +66,11 @@ uint32_t InstructionReader::VisitInstruction(uint32_t& offset, IInstructionProce
 		// call instruction processor if given
 		if (processor)
 		{
-			processor->ProcessInstruction(offset, opcode, flags, here.subspan(1, size - 1));
+			// assume the instruction will be okay, so only pop it if ProcessInstruction fails
+			if (!processor->ProcessInstruction(m_instructions.emplace_back(offset, opcode, flags, here.subspan(1, size - 1))))
+			{
+				m_instructions.pop_back();
+			}
 		}
 
 		// simplifies switch labels

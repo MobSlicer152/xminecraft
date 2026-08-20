@@ -42,10 +42,35 @@ struct Operand
 	};
 };
 
-enum class InstructionFlags
+/// <summary>
+/// Flags for an instruction
+/// </summary>
+enum class InstructionFlags : uint8_t
 {
 	None = 0 << 0,
 	Wide = 1 << 0,
+};
+
+/// <summary>
+/// A parsed instruction, references data from the bytecode it was parsed from
+/// </summary>
+struct Instruction
+{
+	uint32_t offset;
+	Opcode opcode;
+	InstructionFlags flags;
+	std::span<const uint8_t> operands;
+
+	/// <summary>
+	/// Get the instruction's operand
+	/// </summary>
+	/// <param name="offset">Optional offset into operand data</param>
+	/// <returns>The value</returns>
+	template <typename T> T GetOperand(uint16_t offset = 0)
+	{
+		XJVM_ASSERT(offset + sizeof(T) <= operands.size());
+		return *(T*)&operands[offset];
+	}
 };
 
 /// <summary>
@@ -66,13 +91,8 @@ class IInstructionProcessor
 	/// <summary>
 	/// Process the instruction at the given offset
 	/// </summary>
-	/// <param name="offset">The offset into the bytecode the instruction is at, may be modified if needed</param>
-	/// <param name="opcode">The opcode of the instruction</param>
-	/// <param name="flags">Flags for this instruction</param>
-	/// <param name="data">Any bytes in the instruction after the opcode</param>
 	/// <returns>Whether the instruction was processed successfully</returns>
-	virtual bool ProcessInstruction(uint32_t& offset, Opcode opcode, InstructionFlags flags,
-									std::span<const uint8_t> data = {}) = 0;
+	virtual bool ProcessInstruction(Instruction& instruction) = 0;
 };
 
 /// <summary>
@@ -99,8 +119,15 @@ class InstructionReader
 	/// <returns>The number of bytes parsed successfully</returns>
 	uint32_t Parse(IInstructionProcessor* processor = nullptr);
 
+	/// <summary>
+	/// Get the parsed instructions
+	/// </summary>
+	/// <returns>The instructions</returns>
+	const std::vector<Instruction>& GetInstructions() const;
+
   private:
 	std::span<const uint8_t> m_bytecode;
+	std::vector<Instruction> m_instructions;
 
 	/// <summary>
 	/// Visit an instruction
@@ -108,7 +135,7 @@ class InstructionReader
 	/// <param name="offset">The offset of the current instruction</param>
 	/// <param name="processor">Instruction processor to call</param>
 	/// <returns>The length of the instruction, or UINT32_MAX on failure</returns>
-	uint32_t VisitInstruction(uint32_t& offset, IInstructionProcessor* processor);
+	uint32_t VisitInstruction(uint32_t offset, IInstructionProcessor* processor);
 };
 
 #ifdef XJVM_ENABLE_INSTRUCTION_PRINTER
@@ -119,14 +146,15 @@ class PrintInstructionProcessor: public IInstructionProcessor
 	{
 	}
 
-	bool ProcessInstruction(uint32_t& offset, XJVM::Opcode opcode, XJVM::InstructionFlags flags,
-							std::span<const uint8_t> data) override
+	bool ProcessInstruction(Instruction& instruction) override
 	{
 		std::string dataStr;
-		std::for_each(data.begin(), data.end(),
+		std::for_each(instruction.operands.begin(), instruction.operands.end(),
 					  [&](const auto val) { dataStr = std::format("{}{}{:02X}", dataStr, dataStr.empty() ? "" : " ", val); });
 
-		std::println("{:08X}  {:02X} {}\t\t{} <{}>", offset, opcode, std::to_underlying(flags), OPCODE_INFO[opcode].name,
+		std::println("{:08X}  {:02X} {}\t\t{} <{}>", instruction.offset, instruction.opcode,
+					 std::to_underlying(instruction.flags),
+					 OPCODE_INFO[opcode].name,
 					 dataStr);
 		return true;
 	}
