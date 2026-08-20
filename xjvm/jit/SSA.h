@@ -5,6 +5,8 @@
 namespace XJVM::JIT
 {
 
+using SSAID = uint32_t;
+
 /// <summary>
 /// Value type
 /// </summary>
@@ -22,7 +24,7 @@ enum class ValueType
 /// </summary>
 struct SSAValue
 {
-	uint32_t id;
+	SSAID id;
 	ValueType type;
 };
 

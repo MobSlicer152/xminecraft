@@ -18,7 +18,6 @@
     <ClInclude Include="FieldDescriptor.h" />
     <ClInclude Include="InstructionReader.h" />
     <ClInclude Include="JarFile.h" />
-    <ClInclude Include="jit\BlockFinder.h" />
     <ClInclude Include="jit\SSA.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="hash.h" />
@@ -39,7 +38,6 @@
     <ClCompile Include="jit\ControlFlowGraph.cpp" />
     <ClCompile Include="InstructionReader.cpp" />
     <ClCompile Include="JarFile.cpp" />
-    <ClCompile Include="jit\BlockFinder.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

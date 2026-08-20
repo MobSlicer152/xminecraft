@@ -63,9 +63,6 @@
     <ClInclude Include="InstructionReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jit\BlockFinder.h">
-      <Filter>Header Files\JIT</Filter>
-    </ClInclude>
     <ClInclude Include="jit\ControlFlowGraph.h">
       <Filter>Header Files\JIT</Filter>
     </ClInclude>
@@ -91,9 +88,6 @@
     </ClCompile>
     <ClCompile Include="InstructionReader.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="jit\BlockFinder.cpp">
-      <Filter>Source Files\JIT</Filter>
     </ClCompile>
     <ClCompile Include="jit\ControlFlowGraph.cpp">
       <Filter>Source Files\JIT</Filter>

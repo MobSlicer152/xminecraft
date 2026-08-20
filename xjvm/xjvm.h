@@ -12,8 +12,9 @@
 #include "OffsetSpan.h"
 #include "class_structs.h"
 #include "hash.h"
-#include "jit/BlockFinder.h"
 #include "jvmdef.h"
 #include "util.h"
+
+#include "jit/ControlFlowGraph.h"
 
 #pragma warning(pop)
