@@ -37,6 +37,7 @@ uint32_t InstructionReader::Parse(IInstructionProcessor* processor /*= nullptr*/
 
 void InstructionReader::Scan(IInstructionProcessor* processor) const
 {
+	processor->BeginProcessing(m_bytecode);
 	for (const auto& instruction : m_instructions)
 	{
 		processor->ProcessInstruction(instruction);
