@@ -66,10 +66,10 @@ struct Instruction
 	/// </summary>
 	/// <param name="offset">Optional offset into operand data</param>
 	/// <returns>The value</returns>
-	template <typename T> T GetOperand(uint16_t offset = 0)
+	template <typename T> constexpr T GetOperand(uint16_t offset = 0) const
 	{
 		XJVM_ASSERT(offset + sizeof(T) <= operands.size());
-		return *(T*)&operands[offset];
+		return ReadValueAt<T>(operands, offset);
 	}
 };
 

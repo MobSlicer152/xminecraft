@@ -2,6 +2,8 @@
 
 #include "../InstructionReader.h"
 #include "SSA.h"
+#include <map>
+#include <set>
 #include <vector>
 
 namespace XJVM::JIT
@@ -69,9 +71,21 @@ class ControlFlowGraph
 	bool Build(std::span<const Instruction> instructions);
 
   private:
-	std::vector<ControlFlowNode> m_nodes;
-	std::vector<SSAValue> m_ssaValues; // IDs are indexes into this
+	std::span<const Instruction> m_instructions;
+	std::map<uint32_t, uint32_t> m_instructionMap; // offset to index in m_instructions
+	std::map<uint32_t, ControlFlowNode> m_nodes;   // offset to node
+	std::vector<SSAValue> m_ssaValues;			   // IDs are indexes into this
 	ControlFlowNode* m_root = nullptr;
+
+	/// <summary>
+	/// Get the instruction at the given offset
+	/// </summary>
+	/// <param name="offset">The offset</param>
+	/// <returns>The instruction</returns>
+	const Instruction& GetInstruction(uint32_t offset) const;
+
+	bool FindNodes(std::set<uint32_t>& offsets);
+	bool BuildGraph(const std::set<uint32_t>& offsets);
 };
 
 } // namespace XJVM::JIT

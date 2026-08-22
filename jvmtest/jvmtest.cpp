@@ -47,10 +47,16 @@ int main(int argc, char* argv[])
 			std::println("{} -> {}", method.GetName(), method.GetDescriptor());
 			auto code = classFile->GetCode(method);
 			XJVM::InstructionReader reader(code);
-			XJVM::PrintInstructionProcessor proc;
-			if (reader.Parse(&proc) < code.size())
+			// XJVM::PrintInstructionProcessor proc;
+			if (reader.Parse() < code.size())
 			{
 				std::println("FAILED TO PARSE METHOD {}", method.GetName());
+			}
+
+			XJVM::JIT::ControlFlowGraph cfg;
+			if (!cfg.Build(reader.GetInstructions()))
+			{
+				std::println("FAILED TO BUILD CFG FOR METHOD {}", method.GetName());
 			}
 		}
 	}

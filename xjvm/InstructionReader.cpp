@@ -63,8 +63,12 @@ uint32_t InstructionReader::VisitInstruction(uint32_t offset, IInstructionProces
 	Opcode opcode = here[0];
 	InstructionFlags flags = InstructionFlags::None;
 
+	auto switchPadding = [&]() -> uint32_t {
+		return Align(offset + 1, 4u) - offset;
+	};
+
 	// helper to shorten calls to the instruction processor
-	auto process = [&](uint16_t size) -> uint32_t {
+	auto process = [&](uint16_t size, size_t skip = 1) -> uint32_t {
 		// bounds check
 		if (here.size() < (size_t)(size - 1))
 		{
@@ -73,10 +77,11 @@ uint32_t InstructionReader::VisitInstruction(uint32_t offset, IInstructionProces
 		}
 
 		// call instruction processor if given
+		auto& instruction = m_instructions.emplace_back(offset, opcode, flags, here.subspan(skip, size - skip));
 		if (processor)
 		{
 			// assume the instruction will be okay, so only pop it if ProcessInstruction fails
-			if (!processor->ProcessInstruction(m_instructions.emplace_back(offset, opcode, flags, here.subspan(1, size - 1))))
+			if (!processor->ProcessInstruction(instruction))
 			{
 				m_instructions.pop_back();
 			}
@@ -298,33 +303,31 @@ uint32_t InstructionReader::VisitInstruction(uint32_t offset, IInstructionProces
 		PARSE(BREAKPOINT)
 
 	case Opcodes::TABLESWITCH: {
-		// up to 3 bytes of padding
-		size_t size = 1;
-		size += Align(offset + size, 4u) - (offset + size);
+		auto skip = switchPadding();
+		auto size = skip;
 
 		// read values so the size of the table can be calculated
-		auto defaultIdx = ReadNextValue<uint32_t>(here, size);
-		auto lowIdx = ReadNextValue<uint32_t>(here, size);
-		auto highIdx = ReadNextValue<uint32_t>(here, size);
+		auto defaultOffset = ReadNextValue<int32_t>(here, size);
+		auto lowIdx = ReadNextValue<int32_t>(here, size);
+		auto highIdx = ReadNextValue<int32_t>(here, size);
 		auto count = highIdx - lowIdx + 1;
 		size += count * 4;
 
 		// process
-		return process((uint16_t)size);
+		return process((uint16_t)size, skip);
 	}
 
 	case Opcodes::LOOKUPSWITCH: {
-		// up to 3 bytes of padding
-		size_t size = 1;
-		size += Align(offset + size, 4u) - (offset + size);
+		auto skip = switchPadding();
+		auto size = skip;
 
 		// read values so the size of the table can be calculated
-		auto defaultIdx = ReadNextValue<uint32_t>(here, size);
-		auto npairs = ReadNextValue<uint32_t>(here, size);
+		auto defaultOffset = ReadNextValue<int32_t>(here, size);
+		auto npairs = ReadNextValue<int32_t>(here, size);
 		size += npairs * 2 * 4;
 
 		// process
-		return process((uint16_t)size);
+		return process((uint16_t)size, skip);
 	}
 
 	case Opcodes::WIDE: {
@@ -335,7 +338,7 @@ uint32_t InstructionReader::VisitInstruction(uint32_t offset, IInstructionProces
 
 		// set the flag
 		flags |= InstructionFlags::Wide;
-		
+
 		// handle the instruction after
 		switch (opcode)
 		{
