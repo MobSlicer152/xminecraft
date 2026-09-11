@@ -5,7 +5,6 @@
 #define _NO_CRT_STDIO_INLINE
 // fopen is literally fine
 #define _CRT_SECURE_NO_WARNINGS
-#pragma warning(disable : 4002, justification : "adding messages to CRT asserts")
 
 #include "xjvm.h"
 

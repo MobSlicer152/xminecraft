@@ -1,12 +1,15 @@
-#include "stdafx.h"
+#include "..\stdafx.h"
 
 using namespace XJVM;
 using namespace XJVM::JIT;
 
-bool ControlFlowGraph::Build(std::span<const Instruction> instructions)
+ControlFlowGraph::ControlFlowGraph(std::span<const Instruction> instructions) : m_instructions(instructions)
 {
-	// store the instructions, and a map of them by offset
-	m_instructions = instructions;
+}
+
+bool ControlFlowGraph::Build()
+{
+	// map offsets to instructions
 	for (uint32_t i = 0; i < m_instructions.size(); i++)
 	{
 		m_instructionMap[m_instructions[i].offset] = i;
@@ -28,16 +31,22 @@ bool ControlFlowGraph::Build(std::span<const Instruction> instructions)
 
 const XJVM::Instruction& ControlFlowGraph::GetInstruction(uint32_t offset) const
 {
-	return m_instructions[m_instructionMap.at(offset)];
+	auto instruction = m_instructionMap.at(offset);
+	return m_instructions[instruction];
 }
 
 bool ControlFlowGraph::FindNodes(std::set<uint32_t>& offsets)
 {
+	// add the start
+	offsets.insert(0);
 
 	for (uint32_t i = 0; i < m_instructions.size(); i++)
 	{
 		auto& instruction = m_instructions[i];
-		auto addOffset = [&](int32_t offset) { offsets.insert(instruction.offset + offset); };
+		auto addAbsoluteOffset = [&](int32_t offset) {
+			offsets.insert(offset);
+		};
+		auto addOffset = [&](int32_t offset) { addAbsoluteOffset(instruction.offset + offset); };
 
 		switch (instruction.opcode)
 		{
@@ -64,7 +73,7 @@ bool ControlFlowGraph::FindNodes(std::set<uint32_t>& offsets)
 			// if present, instruction after this one is a node
 			if (i < m_instructions.size() - 1)
 			{
-				offsets.insert(m_instructions[i + 1].offset);
+				addAbsoluteOffset(m_instructions[i + 1].offset);
 			}
 			break;
 		}
@@ -91,8 +100,7 @@ bool ControlFlowGraph::FindNodes(std::set<uint32_t>& offsets)
 			addOffset(defaultOffset);
 			for (int32_t i = 0; i < count; i++)
 			{
-				// other offsets
-				addOffset(instruction.GetOperand<int32_t>((2 + i * 2 + 0) * 4));
+				// add offsets, but skip match values
 				addOffset(instruction.GetOperand<int32_t>((2 + i * 2 + 1) * 4));
 			}
 			break;
@@ -109,11 +117,34 @@ bool ControlFlowGraph::FindNodes(std::set<uint32_t>& offsets)
 
 bool ControlFlowGraph::BuildGraph(const std::set<uint32_t>& offsets)
 {
-	for (auto offset : offsets)
+	// if empty or just one instruction, just bail
+	if (offsets.size() < 2)
 	{
-		const auto& instruction = GetInstruction(offset);
-		const auto& name = OPCODE_INFO[instruction.opcode].name;
-		Message("potential node at %08X: %.*s", offset, name.size(), name.data());
+		return true;
 	}
+
+	// build node locations
+	auto bounds = std::vector(offsets.begin(), offsets.end());
+	const auto& last = m_instructions[m_instructions.size() - 1];
+	bounds.push_back(last.offset); // add the end of the bytecode as a terminator
+	for (uint32_t i = 0; i < bounds.size() - 1; i++)
+	{
+		auto start = bounds[i];
+		auto end = bounds[i + 1];
+		
+		const auto& instruction = GetInstruction(start);
+		const auto& name = OPCODE_INFO[instruction.opcode].name;
+
+		DbgMessage("potential node at %08X-%08X: %.*s", start, end, name.size(), name.data());
+
+		auto firstInstruction = m_instructionMap[start];
+		auto lastInstruction = m_instructionMap[end];
+		auto size = std::clamp(lastInstruction - firstInstruction, 0u, m_instructions.size() - firstInstruction - 1);
+		auto instructions = m_instructions.subspan(firstInstruction, size);
+
+		// insert the node
+		m_nodes[start] = ControlFlowNode(instructions);
+	}
+
 	return true;
 }

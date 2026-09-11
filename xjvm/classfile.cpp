@@ -124,6 +124,9 @@ ConstOffsetStringView ClassFile::GetStringOffset(const ConstantInfo& constant, b
 		index = getDescriptor ? constant.nameAndTypeInfo.descriptorIndex : constant.nameAndTypeInfo.nameIndex;
 		break;
 	}
+	default: {
+		return {};
+	}
 	}
 
 	// if this wasn't a utf8, recurse

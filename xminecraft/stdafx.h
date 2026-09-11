@@ -31,6 +31,4 @@
 
 #include "../xjvm/xjvm.h"
 
-extern "C" void NTAPI DbgPrint(const char* message, ...);
-
 // TODO: reference additional headers your program requires here

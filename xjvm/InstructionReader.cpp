@@ -77,7 +77,7 @@ uint32_t InstructionReader::VisitInstruction(uint32_t offset, IInstructionProces
 		}
 
 		// call instruction processor if given
-		auto& instruction = m_instructions.emplace_back(offset, opcode, flags, here.subspan(skip, size - skip));
+		auto& instruction = m_instructions.emplace_back(offset, size, opcode, flags, here.subspan(skip, size - skip));
 		if (processor)
 		{
 			// assume the instruction will be okay, so only pop it if ProcessInstruction fails

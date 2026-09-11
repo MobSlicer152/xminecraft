@@ -191,24 +191,6 @@ VOID Render()
 }
 
 
-extern "C" long _ftol2(float x);
-extern "C" long _ftol2_sse(float x)
-{
-    return _ftol2(x);
-}
-
-
-void operator delete(void* ptr, size_t)
-{
-    free(ptr);
-}
-
-void operator delete[](void* ptr, size_t)
-{
-    delete ptr;
-}
-
-
 //-----------------------------------------------------------------------------
 // Name: main()
 // Desc: The application's entry point

@@ -53,8 +53,8 @@ int main(int argc, char* argv[])
 				std::println("FAILED TO PARSE METHOD {}", method.GetName());
 			}
 
-			XJVM::JIT::ControlFlowGraph cfg;
-			if (!cfg.Build(reader.GetInstructions()))
+			auto cfg = XJVM::JIT::ControlFlowGraph(reader.GetInstructions());
+			if (!cfg.Build())
 			{
 				std::println("FAILED TO BUILD CFG FOR METHOD {}", method.GetName());
 			}

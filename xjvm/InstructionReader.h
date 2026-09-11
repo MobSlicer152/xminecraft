@@ -57,6 +57,7 @@ enum class InstructionFlags : uint8_t
 struct Instruction
 {
 	uint32_t offset;
+	uint32_t size;
 	Opcode opcode;
 	InstructionFlags flags;
 	std::span<const uint8_t> operands;

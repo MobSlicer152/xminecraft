@@ -1,5 +1,6 @@
 bin/
 obj/
+out
 .vs/
 packages/
 x64/
@@ -10,3 +11,5 @@ x64/
 .p4ignore
 /game/
 *.jar
+out/
+*.tlog

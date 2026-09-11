@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cfloat>
 #include <cstdint>
 #include <limits>
 

@@ -33,7 +33,6 @@ struct ControlFlowFrame
 struct ControlFlowNode
 {
 	std::span<const Instruction> instructions;
-	const Instruction* terminator; // points to instructions.end()
 
 	std::vector<ControlFlowNode*> parents;
 	std::vector<ControlFlowNode*> children;
@@ -52,6 +51,12 @@ class ControlFlowGraph
   public:
 	ControlFlowGraph() = default;
 	~ControlFlowGraph() = default;
+	
+	/// <summary>
+	/// Store instructions
+	/// </summary>
+	/// <param name="instructions">Instructions to analyze</param>
+	ControlFlowGraph(std::span<const Instruction> instructions);
 
 	/// <summary>
 	/// No copies allowed
@@ -66,9 +71,8 @@ class ControlFlowGraph
 	/// <summary>
 	/// Build a control flow graph from the given instructions
 	/// </summary>
-	/// <param name="instructions">The instructions to analyze</param>
 	/// <returns>True if successful, false if graph cannot be built (should never happen on compiler-generated code)</returns>
-	bool Build(std::span<const Instruction> instructions);
+	bool Build();
 
   private:
 	std::span<const Instruction> m_instructions;

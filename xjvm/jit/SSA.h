@@ -1,6 +1,6 @@
 #pragma once
 
-#include "jvmdef.h"
+#include "../jvmdef.h"
 
 namespace XJVM::JIT
 {

@@ -2,9 +2,6 @@
 
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable : 4200, justification : "zero-length arrays are useful")
-
 #include "ClassFile.h"
 #include "FieldDescriptor.h"
 #include "InstructionReader.h"
@@ -16,5 +13,3 @@
 #include "util.h"
 
 #include "jit/ControlFlowGraph.h"
-
-#pragma warning(pop)

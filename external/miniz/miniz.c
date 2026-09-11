@@ -3082,9 +3082,12 @@ extern "C"
 #define NOD3D
 #define NODSOUND
 #include <xtl.h>
+
+#define mz_fopen fopen
+#define mz_freopen freopen
+#define mz_stat64 _stat64
 #else
 #include <windows.h>
-#endif
 
 static WCHAR *mz_utf8z_to_widechar(const char *str)
 {
@@ -3131,6 +3134,7 @@ static int mz_stat64(const char *path, struct __stat64 *buffer)
     return res;
 }
 #endif
+#endif
 
 #ifndef MINIZ_NO_TIME
 #include <sys/utime.h>
@@ -3139,8 +3143,8 @@ static int mz_stat64(const char *path, struct __stat64 *buffer)
 #define MZ_FCLOSE fclose
 #define MZ_FREAD fread
 #define MZ_FWRITE fwrite
-#define MZ_FTELL64 _ftelli64
-#define MZ_FSEEK64 _fseeki64
+#define MZ_FTELL64 ftell
+#define MZ_FSEEK64 fseek
 #if defined(__MINGW32__)
 #define MZ_FILE_STAT_STRUCT _stat
 #define MZ_FILE_STAT mz_stat

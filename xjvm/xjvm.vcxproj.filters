@@ -93,12 +93,4 @@
       <Filter>Source Files\JIT</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="opcodes.inc">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="..\external\miniz\LICENSE">
-      <Filter>External Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>
