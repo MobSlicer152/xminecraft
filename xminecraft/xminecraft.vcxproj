@@ -5,15 +5,23 @@
           <Configuration>Debug</Configuration>
           <Platform>Xbox</Platform>
       </ProjectConfiguration>
+      <ProjectConfiguration Include="Debug|Xbox 360">
+          <Configuration>Debug</Configuration>
+          <Platform>Xbox 360</Platform>
+      </ProjectConfiguration>
       <ProjectConfiguration Include="Release|Xbox">
           <Configuration>Release</Configuration>
           <Platform>Xbox</Platform>
       </ProjectConfiguration>
+      <ProjectConfiguration Include="Release|Xbox 360">
+          <Configuration>Release</Configuration>
+          <Platform>Xbox 360</Platform>
+      </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+        <PrecompiledHeader Condition="'$(Configuration)'=='Debug'">Create</PrecompiledHeader>
+        <PrecompiledHeader Condition="'$(Configuration)'=='Release'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="main.cpp" />
   </ItemGroup>

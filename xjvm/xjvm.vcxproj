@@ -5,13 +5,21 @@
       <Configuration>Debug</Configuration>
       <Platform>Xbox</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Xbox">
-      <Configuration>Release</Configuration>
-      <Platform>Xbox</Platform>
+    <ProjectConfiguration Include="Debug|Xbox 360">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox 360</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox 360">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox 360</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
@@ -66,13 +74,28 @@
     <ApplicationType>RXDK</ApplicationType>
     <ApplicationTypeRevision>Current</ApplicationTypeRevision>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='Xbox 360'" Label="Globals">
+    <Keyword>RXDK</Keyword>
+    <ApplicationType>RXDK</ApplicationType>
+    <ApplicationTypeRevision>Current</ApplicationTypeRevision>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>RXDK</PlatformToolset>
     <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>RXDK</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>RXDK</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>RXDK</PlatformToolset>
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -97,12 +120,40 @@
     <LibraryWPath />
     <SourcePath />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
+    <ExternalIncludePath />
+    <LibraryWPath />
+    <SourcePath />
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox'">
     <ExternalIncludePath />
     <LibraryWPath />
     <SourcePath />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
+    <ExternalIncludePath />
+    <LibraryWPath />
+    <SourcePath />
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox'">
+    <ClCompile />
+    <Link>
+      <IgnoreDefaultLibraries>true</IgnoreDefaultLibraries>
+      <VerboseOutput>false</VerboseOutput>
+    </Link>
+    <ClCompile>
+      <Verbose>false</Verbose>
+      <CLanguageStandard>gnu2y</CLanguageStandard>
+      <CppLanguageStandard>gnu++2c</CppLanguageStandard>
+      <PreprocessorDefines>MINIZ_NO_ARCHIVE_WRITING_APIS;MINIZ_NO_TIME</PreprocessorDefines>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\miniz</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MINIZ_NO_ARCHIVE_WRITING_APIS;MINIZ_NO_TIME;</PreprocessorDefinitions>
+    </ClCompile>
+    <Lib>
+      <CreateIndex>true</CreateIndex>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
     <ClCompile />
     <Link>
       <IgnoreDefaultLibraries>true</IgnoreDefaultLibraries>
@@ -131,6 +182,20 @@
     </ClCompile>
     <Link>
     </Link>
+    <Lib>
+      <CreateIndex>true</CreateIndex>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
+    <ClCompile>
+      <Verbose>false</Verbose>
+      <CLanguageStandard>gnu2y</CLanguageStandard>
+      <CppLanguageStandard>gnu++2c</CppLanguageStandard>
+      <PreprocessorDefines>MINIZ_NO_ARCHIVE_WRITING_APIS;MINIZ_NO_TIME</PreprocessorDefines>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\miniz</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MINIZ_NO_ARCHIVE_WRITING_APIS;MINIZ_NO_TIME;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link />
     <Lib>
       <CreateIndex>true</CreateIndex>
     </Lib>
