@@ -1,37 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-      <ProjectConfiguration Include="Debug|Xbox">
-          <Configuration>Debug</Configuration>
-          <Platform>Xbox</Platform>
-      </ProjectConfiguration>
-      <ProjectConfiguration Include="Debug|Xbox 360">
-          <Configuration>Debug</Configuration>
-          <Platform>Xbox 360</Platform>
-      </ProjectConfiguration>
-      <ProjectConfiguration Include="Release|Xbox">
-          <Configuration>Release</Configuration>
-          <Platform>Xbox</Platform>
-      </ProjectConfiguration>
-      <ProjectConfiguration Include="Release|Xbox 360">
-          <Configuration>Release</Configuration>
-          <Platform>Xbox 360</Platform>
-      </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Xbox">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Xbox 360">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox 360">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-        <PrecompiledHeader Condition="'$(Configuration)'=='Debug'">Create</PrecompiledHeader>
-        <PrecompiledHeader Condition="'$(Configuration)'=='Release'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)'=='Debug'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)'=='Release'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\xjvm\xjvm.vcxproj">
-      <Project>{1b4c618e-0b42-4281-8e6e-b004ec94668b}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="rxdk.project.json" />
@@ -43,23 +38,23 @@
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-    <PropertyGroup Label="Globals" Condition="'$(Platform)'=='Xbox'">
-        <Keyword>RXDK</Keyword>
-        <ApplicationType>RXDK</ApplicationType>
-        <ApplicationTypeRevision>Current</ApplicationTypeRevision>
-        <RxdkXbox>true</RxdkXbox>
-    </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox'" Label="Configuration">
-        <UseDebugLibraries>true</UseDebugLibraries>
-        <PlatformToolset>RXDK</PlatformToolset>
-        <ConfigurationType>Application</ConfigurationType>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox'" Label="Configuration">
-        <UseDebugLibraries>false</UseDebugLibraries>
-        <PlatformToolset>RXDK</PlatformToolset>
-        <ConfigurationType>Application</ConfigurationType>
-    </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>RXDK</PlatformToolset>
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>RXDK</PlatformToolset>
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
+    <PlatformToolset>clang</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
+    <PlatformToolset>clang</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared" />

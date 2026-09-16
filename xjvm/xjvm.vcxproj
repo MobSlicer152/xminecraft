@@ -5,10 +5,6 @@
       <Configuration>Debug</Configuration>
       <Platform>Xbox</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|Xbox 360">
-      <Configuration>Debug</Configuration>
-      <Platform>Xbox 360</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -17,14 +13,18 @@
       <Configuration>Release</Configuration>
       <Platform>Xbox</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Xbox 360">
-      <Configuration>Release</Configuration>
-      <Platform>Xbox 360</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+      <ProjectConfiguration Include="Debug|Xbox 360">
+          <Configuration>Debug</Configuration>
+          <Platform>Xbox 360</Platform>
+      </ProjectConfiguration>
+      <ProjectConfiguration Include="Release|Xbox 360">
+          <Configuration>Release</Configuration>
+          <Platform>Xbox 360</Platform>
+      </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\external\miniz\miniz.h" />
@@ -68,16 +68,6 @@
     <Keyword>Win32proj</Keyword>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-  </PropertyGroup>
-  <PropertyGroup Label="Globals" Condition="'$(Platform)'=='Xbox'">
-    <Keyword>RXDK</Keyword>
-    <ApplicationType>RXDK</ApplicationType>
-    <ApplicationTypeRevision>Current</ApplicationTypeRevision>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='Xbox 360'" Label="Globals">
-    <Keyword>RXDK</Keyword>
-    <ApplicationType>RXDK</ApplicationType>
-    <ApplicationTypeRevision>Current</ApplicationTypeRevision>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox'" Label="Configuration">
