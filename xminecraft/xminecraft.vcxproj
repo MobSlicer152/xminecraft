@@ -9,14 +9,6 @@
       <Configuration>Release</Configuration>
       <Platform>Xbox</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|Xbox 360">
-      <Configuration>Debug</Configuration>
-      <Platform>Xbox 360</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Xbox 360">
-      <Configuration>Release</Configuration>
-      <Platform>Xbox 360</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -27,9 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="rxdk.project.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A51C3D7C-B6D0-4279-ACD1-057DEE14A110}</ProjectGuid>
@@ -48,12 +37,6 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>RXDK</PlatformToolset>
     <ConfigurationType>Application</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
-    <PlatformToolset>clang</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
-    <PlatformToolset>clang</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />

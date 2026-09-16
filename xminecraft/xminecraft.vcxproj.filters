@@ -30,7 +30,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="rxdk.project.json" />
-  </ItemGroup>
 </Project>
